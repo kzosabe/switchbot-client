@@ -1,8 +1,8 @@
 # switchbot-client
 
-[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-informational?style=flat-square)](README.md#License)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/switchbot-client)](https://pypi.org/project/switchbot-client)
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-informational?style=flat-square)](README.md#License)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 
@@ -10,7 +10,6 @@
 
 - [Authentication](#authentication)
 - [Usage](#usage)
-- [Examples](#examples)
 - [License](#license)
 
 
@@ -64,7 +63,6 @@ result = client.devices()
 print(result.body)
 ```
 
-=>
 ```
 {'deviceList': [{'deviceId': 'ABCDEFG', 'deviceName': 'Meter 0A', 'deviceType': 'Meter', 'enableCloudService': True, 'hubDeviceId': 'ABCDE'}, {'deviceId': 'ABCDE', 'deviceName': 'Hub Mini 0', 'deviceType': 'Hub Mini', 'hubDeviceId': 'ABCDE'}], 'infraredRemoteList': [{'deviceId': '12345', 'deviceName': 'My Light', 'remoteType': 'Light', 'hubDeviceId': 'ABCDE'}, {'deviceId': '12345, 'deviceName': 'My Air Conditioner', 'remoteType': 'Air Conditioner', 'hubDeviceId': 'ABCDE'}]}
 ```
@@ -81,7 +79,7 @@ client = SwitchBotAPIClient()
 device_id = "YOURDEVICEID"
 print(client.devices_status(device_id))
 ```
-=>
+
 ```
 SwitchBotAPIResponse(status_code=100, message='success', body={'deviceId': 'ABCDE', 'deviceType': 'Meter', 'hubDeviceId': 'ABCDE', 'humidity': 50, 'temperature': 25.0})
 ```
@@ -102,7 +100,7 @@ client = SwitchBotAPIClient()
 device_id = "12345" # My Light(virtual infrared remote devices)
 print(client.devices_control(device_id, ControlCommand.VirtualInfrared.TURN_ON))
 ```
-=>
+
 ```
 SwitchBotAPIResponse(status_code=100, message='success', body={})
 ```
@@ -120,7 +118,7 @@ from switchbot_client import SwitchBotAPIClient
 client = SwitchBotAPIClient()
 print(client.scenes())
 ```
-=>
+
 ```
 SwitchBotAPIResponse(status_code=100, message='success', body=[{'sceneId': '12345', 'sceneName': 'My Scene'}])
 ```
@@ -134,7 +132,7 @@ from switchbot_client import SwitchBotAPIClient
 client = SwitchBotAPIClient()
 print(client.scenes_execute("12345"))
 ```
-=>
+
 ```
 SwitchBotAPIResponse(status_code=100, message='success', body={})
 ```
