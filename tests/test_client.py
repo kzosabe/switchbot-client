@@ -20,9 +20,7 @@ def test_init_by_args():
 
 
 def test_init_with_domain():
-    sut = SwitchBotAPIClient(
-        token="foobar", api_host_domain="https://new-api.example.com"
-    )
+    sut = SwitchBotAPIClient(token="foobar", api_host_domain="https://new-api.example.com")
     assert sut.token == "foobar"
     assert sut.api_host_domain == "https://new-api.example.com"
 
