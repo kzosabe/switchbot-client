@@ -1,7 +1,7 @@
-import requests
+from dataclasses import dataclass
 import json
 import os
-from dataclasses import dataclass
+import requests
 
 
 @dataclass
@@ -19,10 +19,7 @@ class SwitchBotAPIClient:
     def __init__(self, token: str = None, api_host_domain: str = None) -> None:
         if token is not None:
             self.token = token
-        elif (
-            "SWITCHBOT_OPEN_TOKEN" in os.environ
-            and len(os.environ["SWITCHBOT_OPEN_TOKEN"]) > 0
-        ):
+        elif "SWITCHBOT_OPEN_TOKEN" in os.environ and len(os.environ["SWITCHBOT_OPEN_TOKEN"]) > 0:
             self.token = os.environ["SWITCHBOT_OPEN_TOKEN"]
         else:
             raise RuntimeError("no token specified")
@@ -93,15 +90,14 @@ class SwitchBotAPIClient:
     def _headers(self):
         return {"content-type": "application/json", "authorization": self.token}
 
-    def _check_api_response(self, original_response: requests.Response):
+    @staticmethod
+    def _check_api_response(original_response: requests.Response):
         response = original_response.json()
-        if not "message" in response:
+        if "message" not in response:
             raise RuntimeError("format error")
         if response["message"] == "Unauthorized":
             raise RuntimeError(
                 "Http 401 Error. User permission is denied due to invalid token.",
                 original_response.text,
             )
-        return SwitchBotAPIResponse(
-            response["statusCode"], response["message"], response["body"]
-        )
+        return SwitchBotAPIResponse(response["statusCode"], response["message"], response["body"])
