@@ -1,6 +1,9 @@
 # switchbot-client
 
+An unofficial Python client implementation of the SwitchBot API.
+
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
+[![PyPI - Library Version](https://img.shields.io/pypi/v/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/switchbot-client)](https://pypi.org/project/switchbot-client)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-informational?style=flat-square)](README.md#License)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -28,12 +31,12 @@ If the environment variable `SWITCHBOT_OPEN_TOKEN` is present,
 this client will automatically use this value.
 
 ```shell
-export SWITCHBOT_OPEN_TOKEN=yourswitchbotopentoken
-python3 your_script_using_switchbot_client.py
+export SWITCHBOT_OPEN_TOKEN=your_switchbot_open_token
+python3 your_script.py
 ```
 
 ```python
-# your_script_using_switchbot_client.py
+# your_script.py
 client = SwitchBotAPIClient()
 result = client.devices()
 ```
@@ -45,7 +48,7 @@ It is also possible to initialize the client by passing a token directly as an a
 ```python
 from switchbot_client import SwitchBotAPIClient
 
-your_token = "yourswitchbotopentoken"
+your_token = "your_switchbot_open_token"
 client = SwitchBotAPIClient(token=your_token)
 result = client.devices()
 ```
@@ -76,7 +79,7 @@ You can perform operations on the acquired `deviceId`, such as manipulating it o
 from switchbot_client import SwitchBotAPIClient
 
 client = SwitchBotAPIClient()
-device_id = "YOURDEVICEID"
+device_id = "YOUR_DEVICE_ID"
 print(client.devices_status(device_id))
 ```
 
@@ -138,6 +141,30 @@ SwitchBotAPIResponse(status_code=100, message='success', body={})
 ```
 The specified scene can be executed immediately.
 
+### Object interface
+
+Devices can be manipulated via an easy-to-use object wrapped API(currently only some device types are supported).
+
+```python
+from switchbot_client import SwitchBotAPIClient
+from switchbot_client.devices import Light, AirConditioner
+
+client = SwitchBotAPIClient()
+
+# You can get your Lights and Air Conditioners device ids by
+# print(client.devices().body["infraredRemoteList"])
+
+light = Light(client, device_id="my_light_device_id")
+light.turn_on()
+
+air_conditioner = AirConditioner(client, device_id="my_air_conditioner_device_id")
+air_conditioner.set_all(
+    temperature=25,
+    mode=AirConditioner.Parameters.MODE_DRY,
+    fan_speed=AirConditioner.Parameters.FAN_SPEED_AUTO,
+    power=AirConditioner.Parameters.POWER_ON
+)
+```
 
 ### Examples
 
@@ -171,9 +198,9 @@ def call_this_function_when_i_go_out():
 
 Licensed under either of
 
- * Apache License, Version 2.0
+- Apache License, Version 2.0
    ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license
+- MIT license
    ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
