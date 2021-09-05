@@ -11,8 +11,22 @@ class SwitchBotDevice:
         actual_device_type = status.body["deviceType"]
         if actual_device_type != expected_device_type:
             raise RuntimeError(
-                f"Illegal device type. expected: {expected_device_type}, actual: {actual_device_type}"
+                f"Illegal device type. "
+                f"expected: {expected_device_type}, actual: {actual_device_type}"
             )
+
+    def check_device_type_for_virtual_infrared(self, expected_device_type: str):
+        infrared_remote_devices = self.client.devices().body["infraredRemoteList"]
+        for device in infrared_remote_devices:
+            if device["deviceId"] == expected_device_type:
+                actual_device_type = device["remoteType"]
+                if actual_device_type == expected_device_type:
+                    return
+                raise RuntimeError(
+                    f"Illegal device type. "
+                    f"expected: {expected_device_type}, actual: {actual_device_type}"
+                )
+        raise RuntimeError(f"device not found: {self.device_id}")
 
     def status(self) -> SwitchBotAPIResponse:
         return self.client.devices_status(self.device_id)
@@ -146,6 +160,7 @@ class AirConditioner(SwitchBotDevice):
 
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id)
+        self.check_device_type_for_virtual_infrared("Air Conditioner")
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.VirtualInfrared.TURN_ON)
@@ -154,11 +169,7 @@ class AirConditioner(SwitchBotDevice):
         return self.control(ControlCommand.VirtualInfrared.TURN_OFF)
 
     def set_all(
-            self,
-            temperature: int,
-            mode: str,
-            fan_speed: str,
-            power: str
+        self, temperature: int, mode: str, fan_speed: str, power: str
     ) -> SwitchBotAPIResponse:
         """
         temperature: temperature in celsius
@@ -175,6 +186,7 @@ class AirConditioner(SwitchBotDevice):
 class Light(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id)
+        self.check_device_type_for_virtual_infrared("Light")
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.VirtualInfrared.TURN_ON)
