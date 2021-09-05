@@ -1,6 +1,6 @@
 # switchbot-client
 
-An unofficial Python client implementation of the Switchbot API.
+An unofficial Python client implementation of the SwitchBot API.
 
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Library Version](https://img.shields.io/pypi/v/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
