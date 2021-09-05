@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "switchbot-client"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python client library for SwitchBot API."
 license = "Apache-2.0 or MIT"
 authors = [
@@ -9,10 +9,19 @@ authors = [
 readme = "README.md"
 repository = "https://github.com/kzosabe/switchbot-client"
 homepage = "https://github.com/kzosabe/switchbot-client"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-requests = "^2.26"
+requests = "^2.20"
 
 [tool.poetry.dev-dependencies]
 black = "^21.8b0"
