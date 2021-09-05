@@ -3,7 +3,11 @@ from switchbot_client import SwitchBotAPIClient, SwitchBotAPIResponse, ControlCo
 
 class SwitchBotDevice:
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        if client is None:
+            raise TypeError
         self.client = client
+        if device_id is None:
+            raise TypeError
         self.device_id = device_id
 
     def check_device_type(self, expected_device_type: str):
@@ -18,7 +22,7 @@ class SwitchBotDevice:
     def check_device_type_for_virtual_infrared(self, expected_device_type: str):
         infrared_remote_devices = self.client.devices().body["infraredRemoteList"]
         for device in infrared_remote_devices:
-            if device["deviceId"] == expected_device_type:
+            if device["deviceId"] == self.device_id:
                 actual_device_type = device["remoteType"]
                 if actual_device_type == expected_device_type:
                     return
