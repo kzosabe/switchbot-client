@@ -51,6 +51,11 @@ class Plug(SwitchBotDevice):
 
 
 class Curtain(SwitchBotDevice):
+    class Parameters:
+        MODE_PERFORMANCE = "0"
+        MODE_SILENT = "1"
+        MODE_DEFAULT = "ff"
+
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id)
         self.check_device_type("Curtain")
@@ -63,7 +68,7 @@ class Curtain(SwitchBotDevice):
 
     def set_position(self, index: int, mode: str, position: int) -> SwitchBotAPIResponse:
         """
-        mode: 0 (Performance Mode), 1 (Silent Mode), ff (default mode)
+        mode(Parameters.MODE_XXX): 0 (Performance Mode), 1 (Silent Mode), ff (default mode)
         position: 0 ~ 100 (0 means opened, 100 means closed)
         """
         return self.control(
@@ -94,6 +99,12 @@ class Humidifier(SwitchBotDevice):
 
 
 class SmartFan(SwitchBotDevice):
+    class Parameters:
+        POWER_ON = "on"
+        POWER_OFF = "off"
+        FAN_MODE_STANDARD = 1
+        FAN_MODE_NATURAL = 2
+
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id)
         self.check_device_type("SmartFan")
@@ -108,8 +119,8 @@ class SmartFan(SwitchBotDevice):
         self, power: str, fan_mode: int, fan_speed: int, shake_range: int
     ) -> SwitchBotAPIResponse:
         """
-        power: off, on
-        fan_mode: 1 (Standard), 2 (Natural)
+        power(Parameters.POWER_XXX): off, on
+        fan_mode(Parameters.FAN_MODE_XXX): 1 (Standard), 2 (Natural)
         fan_speed: 1, 2, 3, 4
         shake_range: 0 ~ 120
         """
@@ -120,6 +131,19 @@ class SmartFan(SwitchBotDevice):
 
 
 class AirConditioner(SwitchBotDevice):
+    class Parameters:
+        MODE_AUTO = 1
+        MODE_COOL = 2
+        MODE_DRY = 3
+        MODE_FAN = 4
+        MODE_HEAT = 5
+        FAN_SPEED_AUTO = 1
+        FAN_SPEED_LOW = 2
+        FAN_SPEED_MEDIUM = 3
+        FAN_SPEED_HIGH = 4
+        POWER_ON = "on"
+        POWER_OFF = "off"
+
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id)
 
@@ -129,16 +153,22 @@ class AirConditioner(SwitchBotDevice):
     def turn_off(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.VirtualInfrared.TURN_OFF)
 
-    def set_all(self, temperature, mode, fan_speed, power_state) -> SwitchBotAPIResponse:
+    def set_all(
+            self,
+            temperature: int,
+            mode: str,
+            fan_speed: str,
+            power: str
+    ) -> SwitchBotAPIResponse:
         """
         temperature: temperature in celsius
-        mode: 1(auto), 2(cool), 3(dry), 4(fan), 5(heat)
-        fan_speed: 1(auto), 2(low), 3(medium), 4(high);
-        power_state: on, off
+        mode(Parameters.MODE_XXX): 1(auto), 2(cool), 3(dry), 4(fan), 5(heat)
+        fan_speed(Parameters.FAN_SPEED_XXX): 1(auto), 2(low), 3(medium), 4(high);
+        power(Parameters.POWER_XXX): on, off
         """
         return self.control(
             ControlCommand.VirtualInfrared.SET_ALL,
-            parameter=f"{temperature},{mode},{fan_speed},{power_state}",
+            parameter=f"{temperature},{mode},{fan_speed},{power}",
         )
 
 
