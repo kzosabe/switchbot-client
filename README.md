@@ -1,13 +1,12 @@
 # switchbot-client
 
-An unofficial Python client implementation of the SwitchBot API.
-
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Library Version](https://img.shields.io/pypi/v/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/switchbot-client)](https://pypi.org/project/switchbot-client)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-informational?style=flat-square)](README.md#License)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+An unofficial Python client implementation of the SwitchBot API.
 
 ## Table of Contents
 
@@ -147,6 +146,7 @@ SwitchBotAPIResponse(status_code=100, message='success', body=[{'sceneId': '1234
 ```
 
 You can get a list of all the scenes associated with your SwitchBot account.
+Note that only manual scenes are returned from this api.
 
 ### Execute Scene
 ```python
@@ -163,7 +163,7 @@ The specified scene can be executed immediately.
 
 ### Object interface
 
-Devices can be manipulated via an easy-to-use object wrapped API(currently only some device types are supported).
+Devices can be manipulated via an easy-to-use object wrapped API.
 
 ```python
 from switchbot_client import SwitchBotAPIClient
