@@ -40,8 +40,6 @@ class ControlCommand:
         PAUSE = "Pause"
         PLAY = "Play"
         STOP = "Stop"
-        VOLUME_ADD = "volumeAdd"
-        VOLUME_SUB = "volumeSub"
         SWING = "swing"
         TIMER = "timer"
         LOW_SPEED = "lowSpeed"

@@ -141,6 +141,30 @@ SwitchBotAPIResponse(status_code=100, message='success', body={})
 ```
 The specified scene can be executed immediately.
 
+### Object interface
+
+Devices can be manipulated via an easy-to-use object wrapped API(currently only some device types are supported).
+
+```python
+from switchbot_client import SwitchBotAPIClient
+from switchbot_client.devices import Light, AirConditioner
+
+client = SwitchBotAPIClient()
+
+# You can get your Lights and Air Conditioners device ids by
+# print(client.devices().body["infraredRemoteList"])
+
+light = Light(client, device_id="my_light_device_id")
+light.turn_on()
+
+air_conditioner = AirConditioner(client, device_id="my_air_conditioner_device_id")
+air_conditioner.set_all(
+    temperature=25,
+    mode=AirConditioner.Parameters.MODE_DRY,
+    fan_speed=AirConditioner.Parameters.FAN_SPEED_AUTO,
+    power=AirConditioner.Parameters.POWER_ON
+)
+```
 
 ### Examples
 
