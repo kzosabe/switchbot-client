@@ -60,7 +60,7 @@ class SwitchBotAPIClient:
             )
         return formatted_response
 
-    def devices_control(
+    def devices_commands(
         self,
         device_id: str,
         command: str,

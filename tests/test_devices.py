@@ -94,7 +94,7 @@ def test_light(monkeypatch):
             },
         )
 
-    def mock_devices_control(
+    def mock_devices_commands(
         self,
         device_id: str,
         command: str,
@@ -113,7 +113,7 @@ def test_light(monkeypatch):
         )
 
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
-    monkeypatch.setattr(SwitchBotAPIClient, "devices_control", mock_devices_control)
+    monkeypatch.setattr(SwitchBotAPIClient, "devices_commands", mock_devices_commands)
 
     device = Light(client, "00-202001010000-12345678")
     result = device.turn_on()
