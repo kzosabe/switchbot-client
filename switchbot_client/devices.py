@@ -1,4 +1,10 @@
-from switchbot_client import SwitchBotAPIClient, SwitchBotAPIResponse, DeviceType, RemoteType, ControlCommand
+from switchbot_client import (
+    SwitchBotAPIClient,
+    SwitchBotAPIResponse,
+    DeviceType,
+    RemoteType,
+    ControlCommand,
+)
 
 
 class SwitchBotDevice:
@@ -10,6 +16,14 @@ class SwitchBotDevice:
             raise TypeError
         self.device_id = device_id
 
+    def status(self) -> SwitchBotAPIResponse:
+        return self.client.devices_status(self.device_id)
+
+    def control(
+        self, command: str, parameter: str = None, command_type: str = None
+    ) -> SwitchBotAPIResponse:
+        return self.client.devices_commands(self.device_id, command, parameter, command_type)
+
     def _check_device_type(self, expected_device_type: str):
         status = self.client.devices_status(self.device_id)
         actual_device_type = status.body["deviceType"]
@@ -18,6 +32,14 @@ class SwitchBotDevice:
                 f"Illegal device type. "
                 f"expected: {expected_device_type}, actual: {actual_device_type}"
             )
+
+
+class SwitchBotRemoteDevice(SwitchBotDevice):
+    def turn_on(self) -> SwitchBotAPIResponse:
+        return self.control(ControlCommand.VirtualInfrared.TURN_ON)
+
+    def turn_off(self) -> SwitchBotAPIResponse:
+        return self.control(ControlCommand.VirtualInfrared.TURN_OFF)
 
     def _check_remote_type(self, expected_device_type: str):
         infrared_remote_devices = self.client.devices().body["infraredRemoteList"]
@@ -32,13 +54,17 @@ class SwitchBotDevice:
                 )
         raise RuntimeError(f"device not found: {self.device_id}")
 
-    def status(self) -> SwitchBotAPIResponse:
-        return self.client.devices_status(self.device_id)
 
-    def control(
-        self, command: str, parameter: str = None, command_type: str = None
-    ) -> SwitchBotAPIResponse:
-        return self.client.devices_commands(self.device_id, command, parameter, command_type)
+class Hub(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_device_type(DeviceType.HUB)
+
+
+class HubPlus(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_device_type(DeviceType.HUB_PLUS)
 
 
 class Bot(SwitchBotDevice):
@@ -92,6 +118,12 @@ class Curtain(SwitchBotDevice):
         return self.control(
             ControlCommand.Curtain.SET_POSITION, parameter=f"{index},{mode},{position}"
         )
+
+
+class Meter(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_device_type(DeviceType.METER)
 
 
 class Humidifier(SwitchBotDevice):
@@ -148,7 +180,13 @@ class SmartFan(SwitchBotDevice):
         )
 
 
-class AirConditioner(SwitchBotDevice):
+class IndoorCam(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_device_type(DeviceType.INDOOR_CAM)
+
+
+class AirConditioner(SwitchBotRemoteDevice):
     class Parameters:
         MODE_AUTO = 1
         MODE_COOL = 2
@@ -166,12 +204,6 @@ class AirConditioner(SwitchBotDevice):
         super().__init__(client, device_id)
         self._check_remote_type(RemoteType.AIR_CONDITIONER)
 
-    def turn_on(self) -> SwitchBotAPIResponse:
-        return self.control(ControlCommand.VirtualInfrared.TURN_ON)
-
-    def turn_off(self) -> SwitchBotAPIResponse:
-        return self.control(ControlCommand.VirtualInfrared.TURN_OFF)
-
     def set_all(
         self, temperature: int, mode: str, fan_speed: str, power: str
     ) -> SwitchBotAPIResponse:
@@ -187,19 +219,85 @@ class AirConditioner(SwitchBotDevice):
         )
 
 
-class Light(SwitchBotDevice):
+class TV(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.TV)
+
+
+class Light(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id)
         self._check_remote_type(RemoteType.LIGHT)
-
-    def turn_on(self) -> SwitchBotAPIResponse:
-        return self.control(ControlCommand.VirtualInfrared.TURN_ON)
-
-    def turn_off(self) -> SwitchBotAPIResponse:
-        return self.control(ControlCommand.VirtualInfrared.TURN_OFF)
 
     def brightness_up(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.VirtualInfrared.BRIGHTNESS_UP)
 
     def brightness_down(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.VirtualInfrared.BRIGHTNESS_DOWN)
+
+
+class IPTVStreamer(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.IPTV_STREAMER)
+
+
+class SetTopBox(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.SET_TOP_BOX)
+
+
+class DVD(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.DVD)
+
+
+class Fan(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.FAN)
+
+
+class Projector(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.PROJECTOR)
+
+
+class Camera(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.CAMERA)
+
+
+class AirPurifier(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.AIR_PURIFIER)
+
+
+class Speaker(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.SPEAKER)
+
+
+class WaterHeater(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.WATER_HEATER)
+
+
+class VacuumCleaner(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.VACUUM_CLEANER)
+
+
+class Others(SwitchBotRemoteDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id)
+        self._check_remote_type(RemoteType.OTHERS)
