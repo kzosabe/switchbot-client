@@ -38,7 +38,7 @@ class SwitchBotDevice:
     def control(
         self, command: str, parameter: str = None, command_type: str = None
     ) -> SwitchBotAPIResponse:
-        return self.client.devices_control(self.device_id, command, parameter, command_type)
+        return self.client.devices_commands(self.device_id, command, parameter, command_type)
 
 
 class Bot(SwitchBotDevice):

@@ -121,7 +121,7 @@ from switchbot_client import SwitchBotAPIClient, ControlCommand
 
 client = SwitchBotAPIClient()
 device_id = "12345" # My Light(virtual infrared remote devices)
-print(client.devices_control(device_id, ControlCommand.VirtualInfrared.TURN_ON))
+print(client.devices_commands(device_id, ControlCommand.VirtualInfrared.TURN_ON))
 ```
 
 ```
@@ -200,7 +200,7 @@ def control_all_infrared_remotes_by_type(type: str, command: str):
     devices = filter(lambda d: d["remoteType"] == type, infrared_remotes)
 
     for d in devices:
-        client.devices_control(d["deviceId"], command)
+        client.devices_commands(d["deviceId"], command)
 
 
 def call_this_function_when_i_go_out():
