@@ -1,3 +1,33 @@
+class DeviceType:
+    HUB = "Hub"
+    HUB_PLUS = "Hub Plus"
+    HUB_MINI = "Hub Mini"
+    BOT = "Bot"
+    CURTAIN = "Curtain"
+    PLUG = "Plug"
+    METER = "Meter"
+    HUMIDIFIER = "Humidifier"
+    SMART_FAN = "Smart Fan"
+    INDOOR_CAM = "Indoor Cam"
+
+
+class RemoteType:
+    AIR_CONDITIONER = "Air Conditioner"
+    TV = "TV"
+    LIGHT = "Light"
+    IPTV_STREAMER = "IPTV/Streamer"
+    SET_TOP_BOX = "Set Top Box"
+    DVD = "DVD"
+    FAN = "Fan"
+    PROJECTOR = "Projector"
+    CAMERA = "Camera"
+    AIR_PURIFIER = "Air Purifier"
+    SPEAKER = "Speaker"
+    WATER_HEATER = "Water Heater"
+    VACUUM_CLEANER = "Vacuum Cleaner"
+    OTHERS = "Others"
+
+
 class ControlCommand:
     class Bot:
         TURN_ON = "turnOn"
