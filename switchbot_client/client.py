@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import json
 import os
 import requests
+import yaml
 
 
 @dataclass
@@ -16,17 +17,29 @@ class SwitchBotAPIClient:
     https://github.com/OpenWonderLabs/SwitchBotAPI
     """
 
-    def __init__(self, token: str = None, api_host_domain: str = None) -> None:
+    DEFAULT_CONFIG_FILE_PATH = "~/.config/switchbot-client/config.yml"
+
+    def __init__(
+        self, token: str = None, api_host_domain: str = None, config_file_path: str = None
+    ) -> None:
+        if config_file_path is None:
+            self.__config_file_path = config_file_path
+        config = self._load_config()
         if token is not None:
             self.token = token
         elif "SWITCHBOT_OPEN_TOKEN" in os.environ and len(os.environ["SWITCHBOT_OPEN_TOKEN"]) > 0:
             self.token = os.environ["SWITCHBOT_OPEN_TOKEN"]
+        elif config is not None and "token" in config.keys():
+            self.token = config["token"]
         else:
             raise RuntimeError("no token specified")
 
-        self.api_host_domain = (
-            "https://api.switch-bot.com" if api_host_domain is None else api_host_domain
-        )
+        if api_host_domain is not None:
+            self.api_host_domain = api_host_domain
+        elif config is not None and "api_host_domain" in config.keys():
+            self.api_host_domain = config["api_host_domain"]
+        else:
+            self.api_host_domain = "https://api.switch-bot.com"
 
     def devices(self) -> SwitchBotAPIResponse:
         response: requests.Response = requests.get(
@@ -84,11 +97,23 @@ class SwitchBotAPIClient:
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
 
+    def config_file_path(self):
+        if self.__config_file_path is None:
+            return os.path.expanduser(SwitchBotAPIClient.DEFAULT_CONFIG_FILE_PATH)
+        return self.__config_file_path
+
     def _uri(self, endpoint: str):
         return f"{self.api_host_domain}/{endpoint}"
 
     def _headers(self):
         return {"content-type": "application/json", "authorization": self.token}
+
+    def _load_config(self):
+        config_file_path = self.config_file_path()
+        if os.path.exists(config_file_path):
+            with open(config_file_path, encoding="utf-8") as config_file:
+                return yaml.safe_load(config_file)
+        return None
 
     @staticmethod
     def _check_api_response(original_response: requests.Response):

@@ -37,8 +37,10 @@ python3 your_script.py
 
 ```python
 # your_script.py
+from switchbot_client import SwitchBotAPIClient
+
 client = SwitchBotAPIClient()
-result = client.devices()
+print(client.devices())
 ```
 
 ### Constructor Arguments
@@ -50,9 +52,27 @@ from switchbot_client import SwitchBotAPIClient
 
 your_token = "your_switchbot_open_token"
 client = SwitchBotAPIClient(token=your_token)
-result = client.devices()
+print(client.devices())
 ```
 
+### Config file
+
+If `~/.config/switchbot-client/config.yml` exists and has a `token` entry, 
+this client will automatically use the value.
+
+```shell
+mkdir -p ~/.config/switchbot-client
+echo "token: your_switchbot_open_token" >>  ~/.config/switchbot-client/config.yml
+python3 your_script.py
+```
+
+```python
+# your_script.py
+from switchbot_client import SwitchBotAPIClient
+
+client = SwitchBotAPIClient()
+print(client.devices())
+```
 
 ## Usage
 
