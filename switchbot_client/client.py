@@ -17,7 +17,13 @@ class SwitchBotAPIClient:
     https://github.com/OpenWonderLabs/SwitchBotAPI
     """
 
-    def __init__(self, token: str = None, api_host_domain: str = None) -> None:
+    DEFAULT_CONFIG_FILE_PATH = "~/.config/switchbot-client/config.yml"
+
+    def __init__(
+        self, token: str = None, api_host_domain: str = None, config_file_path: str = None
+    ) -> None:
+        if config_file_path is None:
+            self.__config_file_path = config_file_path
         config = self._load_config()
         if token is not None:
             self.token = token
@@ -91,15 +97,19 @@ class SwitchBotAPIClient:
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
 
+    def config_file_path(self):
+        if self.__config_file_path is None:
+            return os.path.expanduser(SwitchBotAPIClient.DEFAULT_CONFIG_FILE_PATH)
+        return self.__config_file_path
+
     def _uri(self, endpoint: str):
         return f"{self.api_host_domain}/{endpoint}"
 
     def _headers(self):
         return {"content-type": "application/json", "authorization": self.token}
 
-    @staticmethod
-    def _load_config():
-        config_file_path = os.path.expanduser("~/.config/switchbot-client/config.yml")
+    def _load_config(self):
+        config_file_path = self.config_file_path()
         if os.path.exists(config_file_path):
             with open(config_file_path) as config_file:
                 return yaml.safe_load(config_file)
