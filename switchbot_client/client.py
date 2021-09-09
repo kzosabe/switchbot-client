@@ -111,7 +111,7 @@ class SwitchBotAPIClient:
     def _load_config(self):
         config_file_path = self.config_file_path()
         if os.path.exists(config_file_path):
-            with open(config_file_path) as config_file:
+            with open(config_file_path, encoding="utf-8") as config_file:
                 return yaml.safe_load(config_file)
         return None
 

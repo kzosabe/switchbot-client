@@ -24,7 +24,7 @@ def test_init_by_config_file(patch_path_exists, mocker):
     m = mocker.patch("builtins.open", mocker.mock_open(read_data="token: foo"))
     patch_path_exists.return_value = True
     sut = SwitchBotAPIClient()
-    m.assert_called_with(sut.config_file_path())
+    m.assert_called_with(sut.config_file_path(), encoding="utf-8")
 
 
 @patch("os.path.exists")
