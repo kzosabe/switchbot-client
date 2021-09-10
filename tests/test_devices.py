@@ -1,7 +1,47 @@
 import pytest
-from switchbot_client import ControlCommand
+import inspect
+from switchbot_client import ControlCommand, DeviceType, RemoteType
 from switchbot_client.client import SwitchBotAPIClient, SwitchBotAPIResponse
-from switchbot_client.devices import Bot, Light
+from switchbot_client.devices import Bot, Light, SwitchBotDevice, SwitchBotRemoteDevice
+from switchbot_client.devices import remote, physical
+
+
+def test_all_devices_defined(monkeypatch):
+    client = SwitchBotAPIClient("token")
+
+    def dummy_method(self):
+        pass
+
+    monkeypatch.setattr(SwitchBotDevice, "_check_device_type", dummy_method)
+    monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
+
+    physical_types = [getattr(DeviceType, a) for a in dir(DeviceType()) if not a.startswith("_")]
+    defined_physicals = [
+        a[1]
+        for a in inspect.getmembers(physical, inspect.isclass)
+        if issubclass(a[1], SwitchBotDevice) and a[0] != "SwitchBotDevice"
+    ]
+    defined_physicals_types = []
+    for cls in defined_physicals:
+        t = cls(client, "dummy").device_type
+        assert t in physical_types
+        defined_physicals_types.append(t)
+    for t in physical_types:
+        assert t in defined_physicals_types
+
+    remote_types = [getattr(RemoteType, a) for a in dir(RemoteType()) if not a.startswith("_")]
+    defined_remotes = [
+        a[1]
+        for a in inspect.getmembers(remote, inspect.isclass)
+        if issubclass(a[1], SwitchBotRemoteDevice) and a[0] != "SwitchBotRemoteDevice"
+    ]
+    defined_remotes_types = []
+    for cls in defined_remotes:
+        t = cls(client, "dummy").device_type
+        assert t in remote_types
+        defined_remotes_types.append(t)
+    for t in remote_types:
+        assert t in defined_remotes_types
 
 
 def test_init_no_client():

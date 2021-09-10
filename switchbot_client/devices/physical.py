@@ -7,13 +7,14 @@ from switchbot_client import (
 
 
 class SwitchBotDevice:
-    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str, device_type: str):
         if client is None:
             raise TypeError
         self.client = client
         if device_id is None:
             raise TypeError
         self.device_id = device_id
+        self.device_type = device_type
 
     def status(self) -> SwitchBotAPIResponse:
         return self.client.devices_status(self.device_id)
@@ -23,7 +24,8 @@ class SwitchBotDevice:
     ) -> SwitchBotAPIResponse:
         return self.client.devices_commands(self.device_id, command, parameter, command_type)
 
-    def _check_device_type(self, expected_device_type: str):
+    def _check_device_type(self):
+        expected_device_type = self.device_type
         status = self.client.devices_status(self.device_id)
         actual_device_type = status.body["deviceType"]
         if actual_device_type != expected_device_type:
@@ -35,20 +37,26 @@ class SwitchBotDevice:
 
 class Hub(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.HUB)
+        super().__init__(client, device_id, DeviceType.HUB)
+        self._check_device_type()
+
+
+class HubMini(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id, DeviceType.HUB_MINI)
+        self._check_device_type()
 
 
 class HubPlus(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.HUB_PLUS)
+        super().__init__(client, device_id, DeviceType.HUB_PLUS)
+        self._check_device_type()
 
 
 class Bot(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.BOT)
+        super().__init__(client, device_id, DeviceType.BOT)
+        self._check_device_type()
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.Bot.TURN_ON)
@@ -62,8 +70,8 @@ class Bot(SwitchBotDevice):
 
 class Plug(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.PLUG)
+        super().__init__(client, device_id, DeviceType.PLUG)
+        self._check_device_type()
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.Plug.TURN_ON)
@@ -79,8 +87,8 @@ class Curtain(SwitchBotDevice):
         MODE_DEFAULT = "ff"
 
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.CURTAIN)
+        super().__init__(client, device_id, DeviceType.CURTAIN)
+        self._check_device_type()
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.Curtain.TURN_ON)
@@ -100,14 +108,14 @@ class Curtain(SwitchBotDevice):
 
 class Meter(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.METER)
+        super().__init__(client, device_id, DeviceType.METER)
+        self._check_device_type()
 
 
 class Humidifier(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.HUMIDIFIER)
+        super().__init__(client, device_id, DeviceType.HUMIDIFIER)
+        self._check_device_type()
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.Humidifier.TURN_ON)
@@ -134,8 +142,8 @@ class SmartFan(SwitchBotDevice):
         FAN_MODE_NATURAL = 2
 
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.SMART_FAN)
+        super().__init__(client, device_id, DeviceType.SMART_FAN)
+        self._check_device_type()
 
     def turn_on(self) -> SwitchBotAPIResponse:
         return self.control(ControlCommand.SmartFan.TURN_ON)
@@ -160,5 +168,5 @@ class SmartFan(SwitchBotDevice):
 
 class IndoorCam(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
-        super().__init__(client, device_id)
-        self._check_device_type(DeviceType.INDOOR_CAM)
+        super().__init__(client, device_id, DeviceType.INDOOR_CAM)
+        self._check_device_type()
