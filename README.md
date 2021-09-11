@@ -1,13 +1,12 @@
 # switchbot-client
 
-An unofficial Python client implementation of the SwitchBot API.
-
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Library Version](https://img.shields.io/pypi/v/switchbot-client.svg)](https://pypi.org/project/switchbot-client/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/switchbot-client)](https://pypi.org/project/switchbot-client)
 [![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-informational?style=flat-square)](README.md#License)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+An unofficial Python client implementation of the SwitchBot API.
 
 ## Table of Contents
 
@@ -37,8 +36,10 @@ python3 your_script.py
 
 ```python
 # your_script.py
+from switchbot_client import SwitchBotAPIClient
+
 client = SwitchBotAPIClient()
-result = client.devices()
+print(client.devices())
 ```
 
 ### Constructor Arguments
@@ -50,9 +51,27 @@ from switchbot_client import SwitchBotAPIClient
 
 your_token = "your_switchbot_open_token"
 client = SwitchBotAPIClient(token=your_token)
-result = client.devices()
+print(client.devices())
 ```
 
+### Config file
+
+If `~/.config/switchbot-client/config.yml` exists and has a `token` entry, 
+this client will automatically use the value.
+
+```shell
+mkdir -p ~/.config/switchbot-client
+echo "token: your_switchbot_open_token" >>  ~/.config/switchbot-client/config.yml
+python3 your_script.py
+```
+
+```python
+# your_script.py
+from switchbot_client import SwitchBotAPIClient
+
+client = SwitchBotAPIClient()
+print(client.devices())
+```
 
 ## Usage
 
@@ -101,7 +120,7 @@ from switchbot_client import SwitchBotAPIClient, ControlCommand
 
 client = SwitchBotAPIClient()
 device_id = "12345" # My Light(virtual infrared remote devices)
-print(client.devices_control(device_id, ControlCommand.VirtualInfrared.TURN_ON))
+print(client.devices_commands(device_id, ControlCommand.VirtualInfrared.TURN_ON))
 ```
 
 ```
@@ -127,6 +146,7 @@ SwitchBotAPIResponse(status_code=100, message='success', body=[{'sceneId': '1234
 ```
 
 You can get a list of all the scenes associated with your SwitchBot account.
+Note that only manual scenes are returned from this api.
 
 ### Execute Scene
 ```python
@@ -143,7 +163,7 @@ The specified scene can be executed immediately.
 
 ### Object interface
 
-Devices can be manipulated via an easy-to-use object wrapped API(currently only some device types are supported).
+Devices can be manipulated via an easy-to-use object wrapped API.
 
 ```python
 from switchbot_client import SwitchBotAPIClient
@@ -180,7 +200,7 @@ def control_all_infrared_remotes_by_type(type: str, command: str):
     devices = filter(lambda d: d["remoteType"] == type, infrared_remotes)
 
     for d in devices:
-        client.devices_control(d["deviceId"], command)
+        client.devices_commands(d["deviceId"], command)
 
 
 def call_this_function_when_i_go_out():
