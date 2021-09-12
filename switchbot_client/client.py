@@ -1,8 +1,12 @@
-from dataclasses import dataclass
 import json
 import os
+from dataclasses import dataclass
+from typing import List
+
 import requests
 import yaml
+
+from switchbot_client.devices.base import SwitchBotDevice
 
 
 @dataclass
@@ -14,6 +18,8 @@ class SwitchBotAPIResponse:
 
 class SwitchBotAPIClient:
     """
+    A thin wrapper for SwitchBot API.
+    It returns almost raw API response.
     https://github.com/OpenWonderLabs/SwitchBotAPI
     """
 
@@ -126,3 +132,19 @@ class SwitchBotAPIClient:
                 original_response.text,
             )
         return SwitchBotAPIResponse(response["statusCode"], response["message"], response["body"])
+
+
+class SwitchBotClient:
+    """
+    A more abstract wrapper for SwitchBot API.
+    It returns wrapped objects.
+    """
+
+    def __init__(
+        self, token: str = None, api_host_domain: str = None, config_file_path: str = None
+    ):
+        self.client = SwitchBotAPIClient(token, api_host_domain, config_file_path)
+
+    def devices(self) -> List[SwitchBotDevice]:
+        devices = self.client.devices().body["deviceList"]
+        return [SwitchBotDevice.create(self.client, d) for d in devices]

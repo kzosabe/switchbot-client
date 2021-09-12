@@ -1,36 +1,13 @@
-from switchbot_client import (
-    SwitchBotAPIClient,
-    SwitchBotAPIResponse,
-    RemoteType,
-    ControlCommand,
-)
-from .physical import SwitchBotDeviceBase
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
-class SwitchBotRemoteDevice(SwitchBotDeviceBase):
-    def __init__(self, client: SwitchBotAPIClient, device_id: str, device_type: str):
-        super().__init__(client, device_id, device_type)
-        self._check_remote_type()
+from switchbot_client.enums import ControlCommand, RemoteType
 
-    def turn_on(self) -> SwitchBotAPIResponse:
-        return self.control(ControlCommand.VirtualInfrared.TURN_ON)
+from .base import SwitchBotRemoteDevice
 
-    def turn_off(self) -> SwitchBotAPIResponse:
-        return self.control(ControlCommand.VirtualInfrared.TURN_OFF)
-
-    def _check_remote_type(self):
-        expected_device_type = self.device_type
-        infrared_remote_devices = self.client.devices().body["infraredRemoteList"]
-        for device in infrared_remote_devices:
-            if device["deviceId"] == self.device_id:
-                actual_device_type = device["remoteType"]
-                if actual_device_type == expected_device_type:
-                    return
-                raise RuntimeError(
-                    f"Illegal device type. "
-                    f"expected: {expected_device_type}, actual: {actual_device_type}"
-                )
-        raise RuntimeError(f"device not found: {self.device_id}")
+if TYPE_CHECKING:
+    from switchbot_client.client import SwitchBotAPIClient, SwitchBotAPIResponse
 
 
 class AirConditioner(SwitchBotRemoteDevice):

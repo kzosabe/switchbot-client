@@ -1,62 +1,31 @@
-from switchbot_client import (
-    SwitchBotAPIClient,
-    SwitchBotAPIResponse,
-    DeviceType,
-    ControlCommand,
-)
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from switchbot_client.enums import ControlCommand, DeviceType
+
+from .base import SwitchBotPhysicalDevice
+
+if TYPE_CHECKING:
+    from switchbot_client.client import SwitchBotAPIClient, SwitchBotAPIResponse
 
 
-class SwitchBotDeviceBase:
-    def __init__(self, client: SwitchBotAPIClient, device_id: str, device_type: str):
-        if client is None:
-            raise TypeError
-        self.client = client
-        if device_id is None:
-            raise TypeError
-        self.device_id = device_id
-        self.device_type = device_type
-
-    def status(self) -> SwitchBotAPIResponse:
-        return self.client.devices_status(self.device_id)
-
-    def control(
-        self, command: str, parameter: str = None, command_type: str = None
-    ) -> SwitchBotAPIResponse:
-        return self.client.devices_commands(self.device_id, command, parameter, command_type)
-
-
-class SwitchBotDevice(SwitchBotDeviceBase):
-    def __init__(self, client: SwitchBotAPIClient, device_id: str, device_type: str):
-        super().__init__(client, device_id, device_type)
-        self._check_device_type()
-
-    def _check_device_type(self):
-        expected_device_type = self.device_type
-        status = self.client.devices_status(self.device_id)
-        actual_device_type = status.body["deviceType"]
-        if actual_device_type != expected_device_type:
-            raise RuntimeError(
-                f"Illegal device type. "
-                f"expected: {expected_device_type}, actual: {actual_device_type}"
-            )
-
-
-class Hub(SwitchBotDevice):
+class Hub(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.HUB)
 
 
-class HubMini(SwitchBotDevice):
+class HubMini(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.HUB_MINI)
 
 
-class HubPlus(SwitchBotDevice):
+class HubPlus(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.HUB_PLUS)
 
 
-class Bot(SwitchBotDevice):
+class Bot(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.BOT)
 
@@ -70,7 +39,7 @@ class Bot(SwitchBotDevice):
         return self.control(ControlCommand.Bot.PRESS)
 
 
-class Plug(SwitchBotDevice):
+class Plug(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.PLUG)
 
@@ -81,7 +50,7 @@ class Plug(SwitchBotDevice):
         return self.control(ControlCommand.Plug.TURN_OFF)
 
 
-class Curtain(SwitchBotDevice):
+class Curtain(SwitchBotPhysicalDevice):
     class Parameters:
         MODE_PERFORMANCE = "0"
         MODE_SILENT = "1"
@@ -106,22 +75,22 @@ class Curtain(SwitchBotDevice):
         )
 
 
-class Meter(SwitchBotDevice):
+class Meter(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.METER)
 
 
-class MotionSensor(SwitchBotDevice):
+class MotionSensor(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.MOTION_SENSOR)
 
 
-class ContactSensor(SwitchBotDevice):
+class ContactSensor(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.CONTACT_SENSOR)
 
 
-class ColorBulb(SwitchBotDevice):
+class ColorBulb(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.COLOR_BULB)
 
@@ -154,7 +123,7 @@ class ColorBulb(SwitchBotDevice):
         )
 
 
-class Humidifier(SwitchBotDevice):
+class Humidifier(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.HUMIDIFIER)
 
@@ -175,7 +144,7 @@ class Humidifier(SwitchBotDevice):
         return self.control(ControlCommand.Humidifier.SET_MODE, parameter=mode)
 
 
-class SmartFan(SwitchBotDevice):
+class SmartFan(SwitchBotPhysicalDevice):
     class Parameters:
         POWER_ON = "on"
         POWER_OFF = "off"
@@ -206,6 +175,6 @@ class SmartFan(SwitchBotDevice):
         )
 
 
-class IndoorCam(SwitchBotDevice):
+class IndoorCam(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.INDOOR_CAM)

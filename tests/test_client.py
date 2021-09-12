@@ -1,6 +1,8 @@
+from unittest.mock import patch
+
 import pytest
 import requests
-from unittest.mock import patch
+
 from switchbot_client.client import SwitchBotAPIClient
 
 
