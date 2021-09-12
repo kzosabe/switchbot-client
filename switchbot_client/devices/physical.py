@@ -111,6 +111,49 @@ class Meter(SwitchBotDevice):
         super().__init__(client, device_id, DeviceType.METER)
 
 
+class MotionSensor(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id, DeviceType.MOTION_SENSOR)
+
+
+class ContactSensor(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id, DeviceType.CONTACT_SENSOR)
+
+
+class ColorBulb(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str):
+        super().__init__(client, device_id, DeviceType.COLOR_BULB)
+
+    def turn_on(self) -> SwitchBotAPIResponse:
+        return self.control(ControlCommand.Humidifier.TURN_ON)
+
+    def turn_off(self) -> SwitchBotAPIResponse:
+        return self.control(ControlCommand.Humidifier.TURN_OFF)
+
+    def set_brightness(self, brightness: int) -> SwitchBotAPIResponse:
+        """
+        brightness: 1 ~ 100
+        """
+        return self.control(ControlCommand.ColorBulb.SET_BRIGHTNESS, parameter=f"{brightness}")
+
+    def set_color(self, red: int, green: int, blue: int) -> SwitchBotAPIResponse:
+        """
+        red: 0 ~ 255
+        green: 0 ~ 255
+        blue: 0 ~ 255
+        """
+        return self.control(ControlCommand.ColorBulb.SET_COLOR, parameter=f"{red}:{green}:{blue}")
+
+    def set_color_temperature(self, temperature: int) -> SwitchBotAPIResponse:
+        """
+        temperature: 2700 ~ 6500
+        """
+        return self.control(
+            ControlCommand.ColorBulb.SET_COLOR_TEMPERATURE, parameter=f"{temperature}"
+        )
+
+
 class Humidifier(SwitchBotDevice):
     def __init__(self, client: SwitchBotAPIClient, device_id: str):
         super().__init__(client, device_id, DeviceType.HUMIDIFIER)

@@ -189,7 +189,7 @@ air_conditioner.set_all(
 ### Examples
 
 ```python
-from switchbot_client.enums import ControlCommand
+from switchbot_client.enums import ControlCommand, RemoteType
 from switchbot_client import SwitchBotAPIClient
 
 
@@ -206,10 +206,10 @@ def control_all_infrared_remotes_by_type(type: str, command: str):
 def call_this_function_when_i_go_out():
     print("turn off all lights and air conditioners...")
     control_all_infrared_remotes_by_type(
-        "Light", ControlCommand.VirtualInfrared.TURN_OFF
+        RemoteType.LIGHT, ControlCommand.VirtualInfrared.TURN_OFF
     )
     control_all_infrared_remotes_by_type(
-        "Air Conditioner", ControlCommand.VirtualInfrared.TURN_OFF
+        RemoteType.AIR_CONDITIONER, ControlCommand.VirtualInfrared.TURN_OFF
     )
     print("done")
 ```
