@@ -55,6 +55,9 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
     def _check_device_type(self):
         expected_device_type = self.device_type
         status = self.client.devices_status(self.device_id)
+        # some device returns empty body for devices_status
+        if status.body == {}:
+            return
         actual_device_type = status.body["deviceType"]
         if actual_device_type != expected_device_type:
             raise RuntimeError(

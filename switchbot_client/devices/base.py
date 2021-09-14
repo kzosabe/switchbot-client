@@ -23,3 +23,6 @@ class SwitchBotDevice:
         self, command: str, parameter: str = None, command_type: str = None
     ) -> SwitchBotAPIResponse:
         return self.client.devices_commands(self.device_id, command, parameter, command_type)
+
+    def __repr__(self):
+        return f"<{self.device_type},{self.device_id}>"
