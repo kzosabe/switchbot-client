@@ -86,7 +86,7 @@ print(result.body)
 ```
 
 ```
-{'deviceList': [{'deviceId': 'ABCDEFG', 'deviceName': 'Meter 0A', 'deviceType': 'Meter', 'enableCloudService': True, 'hubDeviceId': 'ABCDE'}, {'deviceId': 'ABCDE', 'deviceName': 'Hub Mini 0', 'deviceType': 'Hub Mini', 'hubDeviceId': 'ABCDE'}], 'infraredRemoteList': [{'deviceId': '12345', 'deviceName': 'My Light', 'remoteType': 'Light', 'hubDeviceId': 'ABCDE'}, {'deviceId': '12345, 'deviceName': 'My Air Conditioner', 'remoteType': 'Air Conditioner', 'hubDeviceId': 'ABCDE'}]}
+{'deviceList': [{'deviceId': 'ABCDEFG', 'deviceName': 'Meter 0A', 'deviceType': 'Meter', 'enableCloudService': True, 'hubDeviceId': 'ABCDE'}, {'deviceId': 'ABCDE', 'deviceName': 'Hub Mini 0', 'deviceType': 'Hub Mini', 'hubDeviceId': 'ABCDE'}], 'infraredRemoteList': [{'deviceId': '12345', 'deviceName': 'My Light', 'remoteType': 'Light', 'hubDeviceId': 'ABCDE'}, {'deviceId': '12345', 'deviceName': 'My Air Conditioner', 'remoteType': 'Air Conditioner', 'hubDeviceId': 'ABCDE'}]}
 ```
 
 If you run the above code, you will get a list of all the devices associated with your SwitchBot account. 

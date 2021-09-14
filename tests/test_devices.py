@@ -3,7 +3,7 @@ import inspect
 import pytest
 
 from switchbot_client import ControlCommand, DeviceType, RemoteType
-from switchbot_client.client import SwitchBotAPIClient, SwitchBotAPIResponse
+from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
 from switchbot_client.devices import (
     Bot,
     Light,

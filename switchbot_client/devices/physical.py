@@ -3,11 +3,64 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from switchbot_client.enums import ControlCommand, DeviceType
+from switchbot_client.types import APIPhysicalDeviceObject
 
-from .base import SwitchBotPhysicalDevice
+from .base import SwitchBotDevice
 
 if TYPE_CHECKING:
-    from switchbot_client.client import SwitchBotAPIClient, SwitchBotAPIResponse
+    from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
+
+
+class SwitchBotPhysicalDevice(SwitchBotDevice):
+    def __init__(self, client: SwitchBotAPIClient, device_id: str, device_type: str):
+        super().__init__(client, device_id, device_type)
+        self._check_device_type()
+
+    @staticmethod
+    def create(  # noqa
+        client: SwitchBotAPIClient, device: APIPhysicalDeviceObject
+    ) -> SwitchBotPhysicalDevice:
+        # pylint: disable=too-many-branches,too-many-return-statements
+        device_id = device["deviceId"]
+        device_type = device["deviceType"]
+        if device_type == DeviceType.HUB:
+            return Hub(client, device_id)
+        if device_type == DeviceType.HUB_MINI:
+            return HubMini(client, device_id)
+        if device_type == DeviceType.HUB_PLUS:
+            return HubPlus(client, device_id)
+        if device_type == DeviceType.BOT:
+            return Bot(client, device_id)
+        if device_type == DeviceType.PLUG:
+            return Plug(client, device_id)
+        if device_type == DeviceType.CURTAIN:
+            return Curtain(client, device_id)
+        if device_type == DeviceType.METER:
+            return Meter(client, device_id)
+        if device_type == DeviceType.MOTION_SENSOR:
+            return MotionSensor(client, device_id)
+        if device_type == DeviceType.CONTACT_SENSOR:
+            return ContactSensor(client, device_id)
+        if device_type == DeviceType.COLOR_BULB:
+            return ColorBulb(client, device_id)
+        if device_type == DeviceType.HUMIDIFIER:
+            return Humidifier(client, device_id)
+        if device_type == DeviceType.SMART_FAN:
+            return SmartFan(client, device_id)
+        if device_type == DeviceType.INDOOR_CAM:
+            return IndoorCam(client, device_id)
+
+        raise TypeError(f"invalid physical device object: {device}")
+
+    def _check_device_type(self):
+        expected_device_type = self.device_type
+        status = self.client.devices_status(self.device_id)
+        actual_device_type = status.body["deviceType"]
+        if actual_device_type != expected_device_type:
+            raise RuntimeError(
+                f"Illegal device type. "
+                f"expected: {expected_device_type}, actual: {actual_device_type}"
+            )
 
 
 class Hub(SwitchBotPhysicalDevice):
