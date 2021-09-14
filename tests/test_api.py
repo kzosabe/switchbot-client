@@ -4,6 +4,7 @@ import pytest
 import requests
 
 from switchbot_client.api import SwitchBotAPIClient
+from switchbot_client.constants import AppConstants
 
 
 @patch.object(SwitchBotAPIClient, "_load_config")
@@ -76,6 +77,7 @@ def test_devices_status(monkeypatch):
             }
 
     def mock_get(*args, **kwargs):
+        assert kwargs["headers"]["user-agent"] == f"switchbot-client/{AppConstants.VERSION}"
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
