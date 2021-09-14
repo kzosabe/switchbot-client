@@ -5,6 +5,8 @@ from dataclasses import dataclass
 import requests
 import yaml
 
+from switchbot_client.constants import AppConstants
+
 
 @dataclass
 class SwitchBotAPIResponse:
@@ -109,7 +111,12 @@ class SwitchBotAPIClient:
         return f"{self.api_host_domain}/{endpoint}"
 
     def _headers(self):
-        return {"content-type": "application/json", "authorization": self.token}
+        version = AppConstants.VERSION
+        return {
+            "content-type": "application/json",
+            "authorization": self.token,
+            "user-agent": f"switchbot-client/{version}",
+        }
 
     def _load_config(self):
         config_file_path = self.config_file_path()
