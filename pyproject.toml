@@ -20,9 +20,11 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 requests = "^2.0"
 PyYAML = "^5.1"
+isort = "^5.9.3"
+typing-extensions = "^3.10.0"
 
 [tool.poetry.dev-dependencies]
 black = ">=18.5b1"
@@ -43,3 +45,6 @@ disable = ["C0114,C0115,C0116,R0903"]
 
 [tool.black]
 line-length = 100
+
+[tool.isort]
+profile = "black"

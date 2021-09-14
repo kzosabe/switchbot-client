@@ -1,9 +1,17 @@
-import pytest
 import inspect
+
+import pytest
+
 from switchbot_client import ControlCommand, DeviceType, RemoteType
-from switchbot_client.client import SwitchBotAPIClient, SwitchBotAPIResponse
-from switchbot_client.devices import Bot, Light, SwitchBotDevice, SwitchBotRemoteDevice
-from switchbot_client.devices import remote, physical
+from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
+from switchbot_client.devices import (
+    Bot,
+    Light,
+    SwitchBotPhysicalDevice,
+    SwitchBotRemoteDevice,
+    physical,
+    remote,
+)
 
 
 def test_all_devices_defined(monkeypatch):
@@ -12,14 +20,14 @@ def test_all_devices_defined(monkeypatch):
     def dummy_method(self):
         pass
 
-    monkeypatch.setattr(SwitchBotDevice, "_check_device_type", dummy_method)
+    monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
 
     physical_types = [getattr(DeviceType, a) for a in dir(DeviceType()) if not a.startswith("_")]
     defined_physicals = [
         a[1]
         for a in inspect.getmembers(physical, inspect.isclass)
-        if issubclass(a[1], SwitchBotDevice) and a[0] != "SwitchBotDevice"
+        if issubclass(a[1], SwitchBotPhysicalDevice) and a[0] != "SwitchBotPhysicalDevice"
     ]
     defined_physicals_types = []
     for cls in defined_physicals:
