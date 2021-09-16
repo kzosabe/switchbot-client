@@ -1,16 +1,16 @@
 from typing_extensions import TypedDict
 
 
-class APIPhysicalDeviceObject(TypedDict):
+class APIDeviceObject(TypedDict):
     deviceId: str
     deviceName: str
+    hubDeviceId: str
+
+
+class APIPhysicalDeviceObject(APIDeviceObject):
     deviceType: str
     enableCloudService: bool
-    hubDeviceId: str
 
 
-class APIRemoteDeviceObject(TypedDict):
-    deviceId: str
-    deviceName: str
+class APIRemoteDeviceObject(APIDeviceObject):
     remoteType: str
-    hubDeviceId: str

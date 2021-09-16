@@ -41,7 +41,7 @@ requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint."message control"]
-disable = ["C0114,C0115,C0116,R0903"]
+disable = ["C0114,C0115,C0116,R0903,R0913"]
 
 [tool.black]
 line-length = 100

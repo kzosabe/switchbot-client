@@ -1,13 +1,21 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
 
 
-class SwitchBotDevice:
-    def __init__(self, client: SwitchBotAPIClient, device_id: str, device_type: str):
+class SwitchBotDevice(ABC):
+    def __init__(
+        self,
+        client: SwitchBotAPIClient,
+        device_id: str,
+        device_type: str,
+        device_name: str,
+        hub_device_id: str,
+    ):
         if client is None:
             raise TypeError
         self.client = client
@@ -15,6 +23,8 @@ class SwitchBotDevice:
             raise TypeError
         self.device_id = device_id
         self.device_type = device_type
+        self.device_name = device_name
+        self.hub_device_id = hub_device_id
 
     def status(self) -> SwitchBotAPIResponse:
         return self.client.devices_status(self.device_id)
