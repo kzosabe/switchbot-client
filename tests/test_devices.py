@@ -1,5 +1,3 @@
-import inspect
-
 import pytest
 
 from switchbot_client import ControlCommand
