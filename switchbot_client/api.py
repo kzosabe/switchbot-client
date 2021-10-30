@@ -27,8 +27,7 @@ class SwitchBotAPIClient:
     def __init__(
         self, token: str = None, api_host_domain: str = None, config_file_path: str = None
     ) -> None:
-        if config_file_path is None:
-            self.__config_file_path = config_file_path
+        self.__config_file_path = config_file_path
         config = self._load_config()
         if token is not None:
             self.token = token

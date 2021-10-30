@@ -54,7 +54,7 @@ def test_devices(monkeypatch):
     def mock_get(*args, **kwargs):
         return MockResponse()
 
-    def dummy_method(self):
+    def dummy_method(self, *args):
         pass
 
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)

@@ -14,10 +14,11 @@ if TYPE_CHECKING:
 class SwitchBotDeviceFactory:
     @staticmethod
     def create(
-        client: SwitchBotAPIClient, device: Union[APIPhysicalDeviceObject, APIRemoteDeviceObject]
+        client: SwitchBotAPIClient,
+        api_object: Union[APIPhysicalDeviceObject, APIRemoteDeviceObject],
     ) -> SwitchBotDevice:
-        if "deviceType" in device:
-            return SwitchBotPhysicalDevice.create(client, device)  # type: ignore
-        if "remoteType" in device:
-            return SwitchBotRemoteDevice.create(client, device)  # type: ignore
-        raise TypeError(f"invalid device object: {device}")
+        if "deviceType" in api_object:
+            return SwitchBotPhysicalDevice.create_by_api_object(client, api_object)  # type: ignore
+        if "remoteType" in api_object:
+            return SwitchBotRemoteDevice.create_by_api_object(client, api_object)  # type: ignore
+        raise TypeError(f"invalid device object: {api_object}")

@@ -12,6 +12,7 @@ class DeviceType:
     HUMIDIFIER = "Humidifier"
     SMART_FAN = "Smart Fan"
     INDOOR_CAM = "Indoor Cam"
+    REMOTE = "Remote"  # undocumented in official api reference?
 
 
 class RemoteType:

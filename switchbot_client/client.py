@@ -1,8 +1,9 @@
-from typing import List
+from typing import List, Optional
 
 from switchbot_client.api import SwitchBotAPIClient
 from switchbot_client.devices.base import SwitchBotDevice
 from switchbot_client.devices.factory import SwitchBotDeviceFactory
+from switchbot_client.scenes import SwitchBotScene
 
 
 class SwitchBotClient:
@@ -21,3 +22,25 @@ class SwitchBotClient:
         devices = response["deviceList"]
         devices.extend(response["infraredRemoteList"])
         return [SwitchBotDeviceFactory.create(self.client, d) for d in devices]
+
+    def device(self, device_id: str) -> Optional[SwitchBotDevice]:
+        filtered = [d for d in self.devices() if d.device_id == device_id]
+        if len(filtered) > 1:
+            raise RuntimeError(f"duplicated device ids found: {filtered}")
+        if len(filtered) == 0:
+            return None
+        return filtered[0]
+
+    def scenes(self) -> List[SwitchBotScene]:
+        response = self.client.scenes().body
+        return [
+            SwitchBotScene(self.client, scene["sceneId"], scene["sceneName"]) for scene in response
+        ]
+
+    def scene(self, scene_id: str) -> Optional[SwitchBotScene]:
+        filtered = [s for s in self.scenes() if s.scene_id == scene_id]
+        if len(filtered) > 1:
+            raise RuntimeError(f"duplicated scene ids found: {filtered}")
+        if len(filtered) == 0:
+            return None
+        return filtered[0]
