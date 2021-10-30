@@ -10,7 +10,6 @@
 -------------------------
 
 - Add [object interface](https://github.com/kzosabe/switchbot-client#object-interface)
-- Add Python >=3.6.2 support
 
 0.1.0, 2021-09-04
 -------------------------
