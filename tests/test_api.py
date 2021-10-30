@@ -5,14 +5,7 @@ import requests
 
 from switchbot_client.api import SwitchBotAPIClient
 from switchbot_client.constants import AppConstants
-from switchbot_client.devices import (
-    AirConditioner,
-    HubMini,
-    Light,
-    Meter,
-    SwitchBotPhysicalDevice,
-    SwitchBotRemoteDevice,
-)
+from switchbot_client.devices import SwitchBotPhysicalDevice, SwitchBotRemoteDevice
 
 
 @patch.object(SwitchBotAPIClient, "_load_config")

@@ -26,7 +26,7 @@ class SwitchBotDevice(ABC):
             raise TypeError
 
         # SwitchBot API returns FFFFFFFFFFFF or 000000000000 if there is no hub device ID
-        if self.hub_device_id == "FFFFFFFFFFFF" or self.hub_device_id == "000000000000":
+        if self.hub_device_id in ["FFFFFFFFFFFF", "000000000000"]:
             self.hub_device_id = None
 
     def status(self) -> DeviceStatus:
