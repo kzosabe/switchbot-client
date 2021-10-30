@@ -6,9 +6,13 @@ class DeviceType:
     CURTAIN = "Curtain"
     PLUG = "Plug"
     METER = "Meter"
+    MOTION_SENSOR = "Motion Sensor"
+    CONTACT_SENSOR = "Contact Sensor"
+    COLOR_BULB = "Color Bulb"
     HUMIDIFIER = "Humidifier"
     SMART_FAN = "Smart Fan"
     INDOOR_CAM = "Indoor Cam"
+    REMOTE = "Remote"  # undocumented in official api reference?
 
 
 class RemoteType:
@@ -47,6 +51,14 @@ class ControlCommand:
         TURN_ON = "turnOn"
         TURN_OFF = "turnOff"
         SET_MODE = "setMode"
+
+    class ColorBulb:
+        TURN_ON = "turnOn"
+        TURN_OFF = "turnOff"
+        TOGGLE = "toggle"
+        SET_BRIGHTNESS = "setBrightness"
+        SET_COLOR = "setColor"
+        SET_COLOR_TEMPERATURE = "setColorTemperature"
 
     class SmartFan:
         TURN_ON = "turnOn"

@@ -36,9 +36,9 @@ python3 your_script.py
 
 ```python
 # your_script.py
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
-client = SwitchBotAPIClient()
+client = SwitchBotClient()
 print(client.devices())
 ```
 
@@ -47,10 +47,10 @@ print(client.devices())
 It is also possible to initialize the client by passing a token directly as an argument.
 
 ```python
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
 your_token = "your_switchbot_open_token"
-client = SwitchBotAPIClient(token=your_token)
+client = SwitchBotClient(token=your_token)
 print(client.devices())
 ```
 
@@ -67,9 +67,9 @@ python3 your_script.py
 
 ```python
 # your_script.py
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
-client = SwitchBotAPIClient()
+client = SwitchBotClient()
 print(client.devices())
 ```
 
@@ -78,32 +78,32 @@ print(client.devices())
 ### Get Device List
 
 ```python
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
-client = SwitchBotAPIClient()
+client = SwitchBotClient()
 result = client.devices()
-print(result.body)
+print(result)
 ```
 
 ```
-{'deviceList': [{'deviceId': 'ABCDEFG', 'deviceName': 'Meter 0A', 'deviceType': 'Meter', 'enableCloudService': True, 'hubDeviceId': 'ABCDE'}, {'deviceId': 'ABCDE', 'deviceName': 'Hub Mini 0', 'deviceType': 'Hub Mini', 'hubDeviceId': 'ABCDE'}], 'infraredRemoteList': [{'deviceId': '12345', 'deviceName': 'My Light', 'remoteType': 'Light', 'hubDeviceId': 'ABCDE'}, {'deviceId': '12345, 'deviceName': 'My Air Conditioner', 'remoteType': 'Air Conditioner', 'hubDeviceId': 'ABCDE'}]}
+[Meter({'device_id': 'ABCDEFG', 'device_type': 'Meter', 'device_name': 'Meter 0A', 'hub_device_id': 'ABCDE', 'is_virtual_infrared': False}), HubMini({'device_id': 'ABCDEFG', 'device_type': 'Hub Mini', 'device_name': 'Hub Mini 0', 'hub_device_id': None, 'is_virtual_infrared': False}), Light({'device_id': '12345', 'device_type': 'Light', 'device_name': 'My Light', 'hub_device_id': 'ABCDE', 'is_virtual_infrared': True}), AirConditioner({'device_id': '12345', 'device_type': 'Air Conditioner', 'device_name': 'My Air Conditioner', 'hub_device_id': 'ABCDE', 'is_virtual_infrared': True})]
 ```
 
 If you run the above code, you will get a list of all the devices associated with your SwitchBot account. 
-You can perform operations on the acquired `deviceId`, such as manipulating it or getting its status.
+You can perform operations on the acquired `device_id`, such as manipulating it or getting its status.
 
 ### Get Device Status
 
 ```python
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
-client = SwitchBotAPIClient()
+client = SwitchBotClient()
 device_id = "YOUR_DEVICE_ID"
-print(client.devices_status(device_id))
+print(client.device(device_id).status())
 ```
 
 ```
-SwitchBotAPIResponse(status_code=100, message='success', body={'deviceId': 'ABCDE', 'deviceType': 'Meter', 'hubDeviceId': 'ABCDE', 'humidity': 50, 'temperature': 25.0})
+DeviceStatus(device_id='ABCDE', device_type='Meter', device_name='Meter 0', hub_device_id='ABCDE', data={'deviceId': 'ABCDE', 'deviceType': 'Meter', 'hubDeviceId': 'ABCDE', 'humidity': 50, 'temperature': 25.0})
 ```
 
 This function allows you to get the status of a device.
@@ -116,33 +116,35 @@ https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-status
 ### Control Device
 
 ```python
-from switchbot_client import SwitchBotAPIClient, ControlCommand
+from switchbot_client import SwitchBotAPIClient
+from switchbot_client.devices import Light
 
 client = SwitchBotAPIClient()
-device_id = "12345" # My Light(virtual infrared remote devices)
-print(client.devices_commands(device_id, ControlCommand.VirtualInfrared.TURN_ON))
+device_id = "12345"  # My Light(virtual infrared remote devices)
+device = Light.create_by_id(client, device_id)
+print(device.turn_on())
 ```
 
 ```
-SwitchBotAPIResponse(status_code=100, message='success', body={})
+SwitchBotCommandResult(status_code=100, message='success', response_body={})
 ```
 
 It allows you to control the specified device.
-The `ControlCommand` class and the following documents define the commands that can be executed.
+The following documents define the commands that can be executed.
 
 https://github.com/OpenWonderLabs/SwitchBotAPI#send-device-control-commands
 
 ### Get Scene List
 
 ```python
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
-client = SwitchBotAPIClient()
+client = SwitchBotClient()
 print(client.scenes())
 ```
 
 ```
-SwitchBotAPIResponse(status_code=100, message='success', body=[{'sceneId': '12345', 'sceneName': 'My Scene'}])
+[SwitchBotScene({'scene_id': '12345', 'scene_name': 'My Scene1'}), SwitchBotScene({'scene_id': '23456', 'scene_name': 'My Scene2'})]
 ```
 
 You can get a list of all the scenes associated with your SwitchBot account.
@@ -150,68 +152,83 @@ Note that only manual scenes are returned from this api.
 
 ### Execute Scene
 ```python
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 
-client = SwitchBotAPIClient()
-print(client.scenes_execute("12345"))
+client = SwitchBotClient()
+print(client.scene("12345").execute())
 ```
 
 ```
-SwitchBotAPIResponse(status_code=100, message='success', body={})
+SwitchBotCommandResult(status_code=100, message='success', response_body={})
 ```
 The specified scene can be executed immediately.
 
-### Object interface
+### Raw API interface
 
-Devices can be manipulated via an easy-to-use object wrapped API.
+Devices and scenes also can be manipulated via the low-level raw API client.
+The `SwitchBotAPIClient` class has methods for each endpoints of SwitchBot API.
 
-```python
-from switchbot_client import SwitchBotAPIClient
-from switchbot_client.devices import Light, AirConditioner
+For example the `/v1.0/devices` endpoint is implemented as `SwitchBotAPIClient.devices()`, 
+the `/v1.0/devices/{device_id}/status"` endpoint is implemented as `SwitchBotAPIClient.devices_status(device_id: str)`.
 
-client = SwitchBotAPIClient()
-
-# You can get your Lights and Air Conditioners device ids by
-# print(client.devices().body["infraredRemoteList"])
-
-light = Light(client, device_id="my_light_device_id")
-light.turn_on()
-
-air_conditioner = AirConditioner(client, device_id="my_air_conditioner_device_id")
-air_conditioner.set_all(
-    temperature=25,
-    mode=AirConditioner.Parameters.MODE_DRY,
-    fan_speed=AirConditioner.Parameters.FAN_SPEED_AUTO,
-    power=AirConditioner.Parameters.POWER_ON
-)
-```
 
 ### Examples
 
 ```python
-from switchbot_client.enums import ControlCommand
-from switchbot_client import SwitchBotAPIClient
-
-
-def control_all_infrared_remotes_by_type(type: str, command: str):
-    client = SwitchBotAPIClient()
-    devices = client.devices()
-    infrared_remotes = devices.body["infraredRemoteList"]
-    devices = filter(lambda d: d["remoteType"] == type, infrared_remotes)
-
-    for d in devices:
-        client.devices_commands(d["deviceId"], command)
+from switchbot_client import devices
+from switchbot_client import SwitchBotClient
 
 
 def call_this_function_when_i_go_out():
+    client = SwitchBotClient()
     print("turn off all lights and air conditioners...")
-    control_all_infrared_remotes_by_type(
-        "Light", ControlCommand.VirtualInfrared.TURN_OFF
-    )
-    control_all_infrared_remotes_by_type(
-        "Air Conditioner", ControlCommand.VirtualInfrared.TURN_OFF
-    )
+    for d in client.devices():
+        if isinstance(d, devices.Light):
+            d.turn_off()
+
+        if isinstance(d, devices.ColorBulb):
+            d.turn_off()
+
+        if isinstance(d, devices.AirConditioner):
+            d.turn_off()
     print("done")
+
+
+def control_devices_by_temperature():
+    client = SwitchBotClient()
+    all_devices = client.devices()
+
+    temperatures = [d.temperature() for d in all_devices if isinstance(d, devices.Meter)]
+    temperature = min(temperatures)
+
+    color_bulbs = [d for d in all_devices if isinstance(d, devices.ColorBulb)]
+    air_conditioners = [d for d in all_devices if isinstance(d, devices.AirConditioner)]
+
+    if temperature > 25.0:
+        print("hot!")
+        for d in color_bulbs:
+            d.set_color("#FF0000")
+
+        for d in air_conditioners:
+            d.set_all(
+                temperature=20.0,
+                mode=devices.AirConditioner.Parameters.MODE_COOL,
+                fan_speed=devices.AirConditioner.Parameters.FAN_SPEED_HIGH,
+                power=devices.AirConditioner.Parameters.POWER_ON
+            )
+
+    elif temperature < 15.0:
+        print("cold!")
+        for d in color_bulbs:
+            d.set_color("#0000FF")
+
+        for d in air_conditioners:
+            d.set_all(
+                temperature=20.0,
+                mode=devices.AirConditioner.Parameters.MODE_HEAT,
+                fan_speed=devices.AirConditioner.Parameters.FAN_SPEED_HIGH,
+                power=devices.AirConditioner.Parameters.POWER_ON
+            )
 ```
 
 ## License
