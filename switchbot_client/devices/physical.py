@@ -121,6 +121,9 @@ class Bot(SwitchBotPhysicalDevice):
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Bot(client, device)
 
+    def power_status(self) -> str:
+        return self.status().raw_data["power"]
+
     def turn_on(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Bot.TURN_ON)
 
@@ -140,6 +143,9 @@ class Plug(SwitchBotPhysicalDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Plug:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Plug(client, device)
+
+    def power_status(self) -> str:
+        return self.status().raw_data["power"]
 
     def turn_on(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Plug.TURN_ON)
@@ -162,6 +168,18 @@ class Curtain(SwitchBotPhysicalDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Curtain:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Curtain(client, device)
+
+    def slide_position(self) -> int:
+        return self.status().raw_data["slidePosition"]
+
+    def is_calibrated(self) -> bool:
+        return self.status().raw_data["calibrate"]
+
+    def is_grouped(self) -> bool:
+        return self.status().raw_data["group"]
+
+    def is_moving(self) -> bool:
+        return self.status().raw_data["moving"]
 
     def turn_on(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Curtain.TURN_ON)
@@ -192,8 +210,8 @@ class Meter(SwitchBotPhysicalDevice):
     def temperature(self) -> float:
         return float(self.status().raw_data["temperature"])
 
-    def humidity(self) -> float:
-        return float(self.status().raw_data["humidity"])
+    def humidity(self) -> int:
+        return self.status().raw_data["humidity"]
 
 
 class MotionSensor(SwitchBotPhysicalDevice):
@@ -206,6 +224,12 @@ class MotionSensor(SwitchBotPhysicalDevice):
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return MotionSensor(client, device)
 
+    def brightness(self) -> str:
+        return self.status().raw_data["brightness"]
+
+    def is_move_detected(self) -> bool:
+        return self.status().raw_data["moveDetected"]
+
 
 class ContactSensor(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
@@ -217,6 +241,15 @@ class ContactSensor(SwitchBotPhysicalDevice):
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return ContactSensor(client, device)
 
+    def brightness(self) -> str:
+        return self.status().raw_data["brightness"]
+
+    def open_state(self) -> str:
+        return self.status().raw_data["openState"]
+
+    def is_move_detected(self) -> bool:
+        return self.status().raw_data["moveDetected"]
+
 
 class ColorBulb(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
@@ -227,6 +260,22 @@ class ColorBulb(SwitchBotPhysicalDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> ColorBulb:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return ColorBulb(client, device)
+
+    def power_status(self) -> str:
+        return self.status().raw_data["power"]
+
+    def brightness(self) -> int:
+        return self.status().raw_data["brightness"]
+
+    def color_hex(self) -> str:
+        """
+        returns #rrggbb format color string
+        """
+        colors = [int(i) for i in self.status().raw_data["color"].split(":")]
+        return "#{:02x}{:02x}{:02x}".format(colors[0], colors[1], colors[2])
+
+    def color_temperature(self) -> int:
+        return self.status().raw_data["colorTemperature"]
 
     def turn_on(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Humidifier.TURN_ON)
@@ -271,6 +320,30 @@ class Humidifier(SwitchBotPhysicalDevice):
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Humidifier(client, device)
 
+    def power_status(self) -> str:
+        return self.status().raw_data["power"]
+
+    def temperature(self) -> float:
+        return float(self.status().raw_data["temperature"])
+
+    def humidity(self) -> int:
+        return self.status().raw_data["humidity"]
+
+    def atomization_efficiency(self) -> int:
+        return self.status().raw_data["nebulizationEfficiency"]
+
+    def is_auto(self) -> bool:
+        return self.status().raw_data["auto"]
+
+    def is_child_lock(self) -> bool:
+        return self.status().raw_data["childLock"]
+
+    def is_muted(self) -> bool:
+        return not self.status().raw_data["sound"]
+
+    def is_lack_water(self) -> bool:
+        return not self.status().raw_data["lackWater"]
+
     def turn_on(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Humidifier.TURN_ON)
 
@@ -303,6 +376,21 @@ class SmartFan(SwitchBotPhysicalDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> SmartFan:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return SmartFan(client, device)
+
+    def mode(self) -> int:
+        return self.status().raw_data["mode"]
+
+    def speed(self) -> int:
+        return self.status().raw_data["speed"]
+
+    def shake_center(self) -> int:
+        return self.status().raw_data["shakeCenter"]
+
+    def shake_range(self) -> int:
+        return self.status().raw_data["shakeRange"]
+
+    def is_shaking(self) -> bool:
+        return self.status().raw_data["shaking"]
 
     def turn_on(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.SmartFan.TURN_ON)
