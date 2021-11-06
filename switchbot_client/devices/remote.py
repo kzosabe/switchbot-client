@@ -104,7 +104,7 @@ class AirConditioner(SwitchBotRemoteDevice):
 
         # remote devices don't have status fetch commands
         # we can only memorize recently applied parameter and use it
-        self.temperature_memory = 25
+        self.temperature_memory = 25.0
         self.mode_memory = AirConditioner.Parameters.MODE_AUTO
         self.fan_speed_memory = AirConditioner.Parameters.FAN_SPEED_AUTO
 
@@ -114,7 +114,7 @@ class AirConditioner(SwitchBotRemoteDevice):
         return AirConditioner(client, device)
 
     def set_all(
-        self, temperature: float, mode: str, fan_speed: str, power: str
+        self, temperature: float, mode: int, fan_speed: int, power: str
     ) -> SwitchBotCommandResult:
         """
         temperature: temperature in celsius
@@ -139,11 +139,12 @@ class AirConditioner(SwitchBotRemoteDevice):
         This is because it is not possible to get the current status from virtual infrared devices.
         mode: auto, fan_speed: auto
 
-        It is recommended to turn on AirConditioner with the set_all with all values specified before use this function.
+        It is recommended to turn on AirConditioner with the set_all
+        with all values specified before use this function.
         """
         return self.set_all(temperature, self.mode_memory, self.fan_speed_memory, "on")
 
-    def set_mode(self, mode: str) -> SwitchBotCommandResult:
+    def set_mode(self, mode: int) -> SwitchBotCommandResult:
         """
         mode(Parameters.MODE_XXX): 1(auto), 2(cool), 3(dry), 4(fan), 5(heat)
 
@@ -152,11 +153,12 @@ class AirConditioner(SwitchBotRemoteDevice):
         This is because it is not possible to get the current status from virtual infrared devices.
         temperature: 25, fan_speed: auto
 
-        It is recommended to turn on AirConditioner with the set_all with all values specified before use this function.
+        It is recommended to turn on AirConditioner with the set_all
+        with all values specified before use this function.
         """
         return self.set_all(self.temperature_memory, mode, self.fan_speed_memory, "on")
 
-    def set_fan_speed(self, fan_speed: str) -> SwitchBotCommandResult:
+    def set_fan_speed(self, fan_speed: int) -> SwitchBotCommandResult:
         """
         fan_speed(Parameters.FAN_SPEED_XXX): 1(auto), 2(low), 3(medium), 4(high)
 
@@ -165,7 +167,8 @@ class AirConditioner(SwitchBotRemoteDevice):
         This is because it is not possible to get the current status from virtual infrared devices.
         temperature: 25, mode: auto
 
-        It is recommended to turn on AirConditioner with the set_all with all values specified before use this function.
+        It is recommended to turn on AirConditioner with the set_all
+        with all values specified before use this function.
         """
         return self.set_all(self.temperature_memory, self.mode_memory, fan_speed, "on")
 
