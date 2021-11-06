@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from switchbot_client.enums import ControlCommand, DeviceType
 from switchbot_client.types import APIPhysicalDeviceObject
 
+from . import DeviceStatus
 from .base import SwitchBotCommandResult, SwitchBotDevice
 
 if TYPE_CHECKING:
@@ -69,6 +70,16 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             if device["deviceId"] == device_id:
                 return device
         raise RuntimeError
+
+    def status(self) -> DeviceStatus:
+        status = self.client.devices_status(self.device_id).body
+        return DeviceStatus(
+            device_id=status["deviceId"] if "deviceId" in status else self.device_id,
+            device_type=status["deviceType"] if "deviceType" in status else self.device_type,
+            device_name=status["deviceName"] if "deviceName" in status else self.device_name,
+            hub_device_id=status["hubDeviceId"] if "hubDeviceId" in status else self.hub_device_id,
+            raw_data=status,
+        )
 
     def _check_device_type(self, expected_device_type: str):
         if self.device_type != expected_device_type:
