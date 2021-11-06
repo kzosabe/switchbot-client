@@ -272,7 +272,7 @@ class ColorBulb(SwitchBotPhysicalDevice):
         returns #rrggbb format color string
         """
         colors = [int(i) for i in self.status().raw_data["color"].split(":")]
-        return "#{:02x}{:02x}{:02x}".format(colors[0], colors[1], colors[2])
+        return f"#{colors[0]:02x}{colors[1]:02x}{colors[2]:02x}"
 
     def color_temperature(self) -> int:
         return self.status().raw_data["colorTemperature"]
