@@ -360,6 +360,12 @@ class Humidifier(SwitchBotPhysicalDevice):
         """
         return self.command(ControlCommand.Humidifier.SET_MODE, parameter=mode)
 
+    def set_atomization_efficiency(self, percentage: int) -> SwitchBotCommandResult:
+        return self.set_mode(str(percentage))
+
+    def set_auto_mode(self) -> SwitchBotCommandResult:
+        return self.set_mode("auto")
+
 
 class SmartFan(SwitchBotPhysicalDevice):
     class Parameters:
@@ -410,6 +416,42 @@ class SmartFan(SwitchBotPhysicalDevice):
         return self.command(
             ControlCommand.SmartFan.SET_ALL_STATUS,
             parameter=f"{power},{fan_mode},{fan_speed},{shake_range}",
+        )
+
+    def set_fan_mode(self, fan_mode: int) -> SwitchBotCommandResult:
+        """
+        fan_mode(Parameters.FAN_MODE_XXX): 1 (Standard), 2 (Natural)
+        """
+        data = self.status().raw_data
+        fan_speed = data["speed"]
+        shake_range = data["shakeRange"]
+        return self.command(
+            ControlCommand.SmartFan.SET_ALL_STATUS,
+            parameter=f"on,{fan_mode},{fan_speed},{shake_range}",
+        )
+
+    def set_fan_speed(self, fan_speed: int) -> SwitchBotCommandResult:
+        """
+        fan_speed: 1, 2, 3, 4
+        """
+        data = self.status().raw_data
+        fan_mode = data["mode"]
+        shake_range = data["shakeRange"]
+        return self.command(
+            ControlCommand.SmartFan.SET_ALL_STATUS,
+            parameter=f"on,{fan_mode},{fan_speed},{shake_range}",
+        )
+
+    def set_shake_range(self, shake_range: int) -> SwitchBotCommandResult:
+        """
+        shake_range: 0 ~ 120
+        """
+        data = self.status().raw_data
+        fan_mode = data["mode"]
+        fan_speed = data["speed"]
+        return self.command(
+            ControlCommand.SmartFan.SET_ALL_STATUS,
+            parameter=f"on,{fan_mode},{fan_speed},{shake_range}",
         )
 
 
