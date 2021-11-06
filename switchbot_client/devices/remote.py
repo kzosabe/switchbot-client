@@ -102,6 +102,11 @@ class AirConditioner(SwitchBotRemoteDevice):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.AIR_CONDITIONER)
 
+    @staticmethod
+    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> AirConditioner:
+        device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
+        return AirConditioner(client, device)
+
     def set_all(
         self, temperature: float, mode: str, fan_speed: str, power: str
     ) -> SwitchBotCommandResult:
@@ -116,11 +121,6 @@ class AirConditioner(SwitchBotRemoteDevice):
             parameter=f"{temperature},{mode},{fan_speed},{power}",
         )
 
-    @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> AirConditioner:
-        device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
-        return AirConditioner(client, device)
-
 
 class TV(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
@@ -131,6 +131,24 @@ class TV(SwitchBotRemoteDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> TV:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return TV(client, device)
+
+    def set_channel(self, channel_number: int) -> SwitchBotCommandResult:
+        return self.command(
+            ControlCommand.VirtualInfrared.SET_CHANNEL,
+            parameter=f"{channel_number}",
+        )
+
+    def volume_add(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.VOLUME_ADD)
+
+    def volume_sub(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.VOLUME_SUB)
+
+    def channel_add(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.CHANNEL_ADD)
+
+    def channel_sub(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.CHANNEL_SUB)
 
 
 class Light(SwitchBotRemoteDevice):
@@ -160,6 +178,18 @@ class IPTVStreamer(SwitchBotRemoteDevice):
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return IPTVStreamer(client, device)
 
+    def volume_add(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.VOLUME_ADD)
+
+    def volume_sub(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.VOLUME_SUB)
+
+    def channel_add(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.CHANNEL_ADD)
+
+    def channel_sub(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.CHANNEL_SUB)
+
 
 class SetTopBox(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
@@ -170,6 +200,18 @@ class SetTopBox(SwitchBotRemoteDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> SetTopBox:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return SetTopBox(client, device)
+
+    def volume_add(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.VOLUME_ADD)
+
+    def volume_sub(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.VOLUME_SUB)
+
+    def channel_add(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.CHANNEL_ADD)
+
+    def channel_sub(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.CHANNEL_SUB)
 
 
 class DVD(SwitchBotRemoteDevice):
@@ -182,6 +224,30 @@ class DVD(SwitchBotRemoteDevice):
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return DVD(client, device)
 
+    def mute(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.SET_MUTE)
+
+    def fast_forward(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.FAST_FORWARD)
+
+    def rewind(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.REWIND)
+
+    def next(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.NEXT)
+
+    def previous(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.PREVIOUS)
+
+    def pause(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.PAUSE)
+
+    def play(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.PLAY)
+
+    def stop(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.STOP)
+
 
 class Fan(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
@@ -192,6 +258,21 @@ class Fan(SwitchBotRemoteDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Fan:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Fan(client, device)
+
+    def swing(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.SWING)
+
+    def timer(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.TIMER)
+
+    def low_speed(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.LOW_SPEED)
+
+    def middle_speed(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.MIDDLE_SPEED)
+
+    def high_speed(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.HIGH_SPEED)
 
 
 class Projector(SwitchBotRemoteDevice):
@@ -236,6 +317,30 @@ class Speaker(SwitchBotRemoteDevice):
     def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Speaker:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Speaker(client, device)
+
+    def mute(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.SET_MUTE)
+
+    def fast_forward(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.FAST_FORWARD)
+
+    def rewind(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.REWIND)
+
+    def next(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.NEXT)
+
+    def previous(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.PREVIOUS)
+
+    def pause(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.PAUSE)
+
+    def play(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.PLAY)
+
+    def stop(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.VirtualInfrared.STOP)
 
 
 class WaterHeater(SwitchBotRemoteDevice):
