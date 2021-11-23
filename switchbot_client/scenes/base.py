@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 from switchbot_client.devices import SwitchBotCommandResult
 
 if TYPE_CHECKING:
-    from switchbot_client.api import SwitchBotAPIClient
+    from switchbot_client import SwitchBotClient
 
 
 @dataclass()
 class SwitchBotScene:
-    client: SwitchBotAPIClient
+    client: SwitchBotClient
     scene_id: str
     scene_name: str
 
@@ -22,7 +22,7 @@ class SwitchBotScene:
             raise TypeError
 
     def execute(self) -> SwitchBotCommandResult:
-        response = self.client.scenes_execute(self.scene_id)
+        response = self.client.api_client.scenes_execute(self.scene_id)
         return SwitchBotCommandResult(response.status_code, response.message, response.body)
 
     def __repr__(self):

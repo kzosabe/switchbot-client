@@ -8,7 +8,7 @@ from switchbot_client.types import APIPhysicalDeviceObject
 from .base import SwitchBotCommandResult, SwitchBotDevice
 
 if TYPE_CHECKING:
-    from switchbot_client.api import SwitchBotAPIClient
+    from switchbot_client import SwitchBotClient
     from switchbot_client.devices.status import (
         BotDeviceStatus,
         ColorBulbDeviceStatus,
@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 
 class SwitchBotPhysicalDevice(SwitchBotDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         device_id = device["deviceId"]
         device_type = device["deviceType"]
         device_name = device["deviceName"]
@@ -34,7 +34,7 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
 
     @staticmethod
     def create_by_api_object(  # noqa
-        client: SwitchBotAPIClient, device: APIPhysicalDeviceObject
+        client: SwitchBotClient, device: APIPhysicalDeviceObject
     ) -> SwitchBotPhysicalDevice:
         # pylint: disable=too-many-branches,too-many-return-statements
         device_type = device["deviceType"]
@@ -70,20 +70,20 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
         raise TypeError(f"invalid physical device object: {device}")
 
     @staticmethod
-    def get_device_by_id(client: SwitchBotAPIClient, device_id: str) -> APIPhysicalDeviceObject:
+    def get_device_by_id(client: SwitchBotClient, device_id: str) -> APIPhysicalDeviceObject:
         if client is None:
             raise TypeError
         if device_id is None:
             raise TypeError
-        response = client.devices()
+        response = client.api_client.devices()
         physical_devices = response.body["deviceList"]
         for device in physical_devices:
             if device["deviceId"] == device_id:
                 return device
-        raise RuntimeError
+        raise RuntimeError(f"device not found: {device_id}")
 
     def status(self) -> DeviceStatus:
-        status = self.client.devices_status(self.device_id).body
+        status = self.client.api_client.devices_status(self.device_id).body
         return DeviceStatus(
             device_id=status["deviceId"] if "deviceId" in status else self.device_id,
             device_type=status["deviceType"] if "deviceType" in status else self.device_type,
@@ -101,45 +101,45 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
 
 
 class Hub(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.HUB)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Hub:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Hub:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Hub(client, device)
 
 
 class HubMini(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.HUB_MINI)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> HubMini:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> HubMini:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return HubMini(client, device)
 
 
 class HubPlus(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.HUB_PLUS)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> HubPlus:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> HubPlus:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return HubPlus(client, device)
 
 
 class Bot(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.BOT)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Bot:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Bot:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Bot(client, device)
 
@@ -168,12 +168,12 @@ class Bot(SwitchBotPhysicalDevice):
 
 
 class Plug(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.PLUG)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Plug:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Plug:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Plug(client, device)
 
@@ -204,12 +204,12 @@ class Curtain(SwitchBotPhysicalDevice):
         MODE_SILENT = "1"
         MODE_DEFAULT = "ff"
 
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.CURTAIN)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Curtain:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Curtain:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Curtain(client, device)
 
@@ -256,12 +256,12 @@ class Curtain(SwitchBotPhysicalDevice):
 
 
 class Meter(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.METER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Meter:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Meter:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Meter(client, device)
 
@@ -285,12 +285,12 @@ class Meter(SwitchBotPhysicalDevice):
 
 
 class MotionSensor(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.MOTION_SENSOR)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> MotionSensor:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> MotionSensor:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return MotionSensor(client, device)
 
@@ -314,12 +314,12 @@ class MotionSensor(SwitchBotPhysicalDevice):
 
 
 class ContactSensor(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.CONTACT_SENSOR)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> ContactSensor:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> ContactSensor:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return ContactSensor(client, device)
 
@@ -347,12 +347,12 @@ class ContactSensor(SwitchBotPhysicalDevice):
 
 
 class ColorBulb(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.COLOR_BULB)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> ColorBulb:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> ColorBulb:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return ColorBulb(client, device)
 
@@ -421,12 +421,12 @@ class ColorBulb(SwitchBotPhysicalDevice):
 
 
 class Humidifier(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.HUMIDIFIER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Humidifier:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Humidifier:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Humidifier(client, device)
 
@@ -502,12 +502,12 @@ class SmartFan(SwitchBotPhysicalDevice):
         FAN_MODE_STANDARD = 1
         FAN_MODE_NATURAL = 2
 
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.SMART_FAN)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> SmartFan:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> SmartFan:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return SmartFan(client, device)
 
@@ -599,22 +599,22 @@ class SmartFan(SwitchBotPhysicalDevice):
 
 
 class IndoorCam(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.INDOOR_CAM)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> IndoorCam:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> IndoorCam:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return IndoorCam(client, device)
 
 
 class Remote(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIPhysicalDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.REMOTE)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Remote:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Remote:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
         return Remote(client, device)
