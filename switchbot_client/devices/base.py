@@ -5,12 +5,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from switchbot_client.api import SwitchBotAPIClient
+    from switchbot_client import SwitchBotClient
 
 
 @dataclass()
 class SwitchBotDevice(ABC):
-    client: SwitchBotAPIClient
+    client: SwitchBotClient
     device_id: str
     device_type: str
     device_name: str
@@ -30,7 +30,9 @@ class SwitchBotDevice(ABC):
     def command(
         self, command: str, parameter: str = None, command_type: str = None
     ) -> SwitchBotCommandResult:
-        response = self.client.devices_commands(self.device_id, command, parameter, command_type)
+        response = self.client.api_client.devices_commands(
+            self.device_id, command, parameter, command_type
+        )
         return SwitchBotCommandResult(response.status_code, response.message, response.body)
 
     def __repr__(self):

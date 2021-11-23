@@ -6,7 +6,7 @@ from .physical import SwitchBotPhysicalDevice
 from .remote import SwitchBotRemoteDevice
 
 if TYPE_CHECKING:
-    from switchbot_client.api import SwitchBotAPIClient
+    from switchbot_client import SwitchBotClient
     from switchbot_client.devices.base import SwitchBotDevice
     from switchbot_client.types import APIPhysicalDeviceObject, APIRemoteDeviceObject
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class SwitchBotDeviceFactory:
     @staticmethod
     def create(
-        client: SwitchBotAPIClient,
+        client: SwitchBotClient,
         api_object: Union[APIPhysicalDeviceObject, APIRemoteDeviceObject],
     ) -> SwitchBotDevice:
         if "deviceType" in api_object:

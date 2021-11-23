@@ -1,6 +1,6 @@
 import pytest
 
-from switchbot_client import ControlCommand
+from switchbot_client import ControlCommand, SwitchBotClient
 from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
 from switchbot_client.devices import Bot, Light
 from switchbot_client.types import APIPhysicalDeviceObject
@@ -20,7 +20,7 @@ def test_init_no_client():
 
 def test_init_no_device():
     with pytest.raises(TypeError):
-        client = SwitchBotAPIClient("token")
+        client = SwitchBotClient("token")
         Bot(client, None)
 
 
@@ -31,7 +31,7 @@ def test_create_no_client():
 
 def test_create_no_device_id():
     with pytest.raises(TypeError):
-        client = SwitchBotAPIClient("token")
+        client = SwitchBotClient("token")
         Bot.create_by_id(client=client, device_id=None)
 
 
@@ -56,7 +56,7 @@ def test_illegal_device_type(monkeypatch):
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_get)
 
     with pytest.raises(RuntimeError):
-        client = SwitchBotAPIClient("token")
+        client = SwitchBotClient("token")
         Bot.create_by_id(client, "device_id")
 
 
@@ -71,7 +71,7 @@ def test_virtual_infrared_no_device(monkeypatch):
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
 
     with pytest.raises(RuntimeError):
-        client = SwitchBotAPIClient("token")
+        client = SwitchBotClient("token")
         Light.create_by_id(client, "00-202001010000-12345678")
 
 
@@ -95,12 +95,12 @@ def test_virtual_infrared_illegal_device_type(monkeypatch):
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
 
     with pytest.raises(RuntimeError):
-        client = SwitchBotAPIClient("token")
+        client = SwitchBotClient("token")
         Light.create_by_id(client, "00-202001010000-12345678")
 
 
 def test_light(monkeypatch):
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotClient("token")
 
     def mock_devices(*args, **kwargs):
         return SwitchBotAPIResponse(
@@ -125,7 +125,7 @@ def test_light(monkeypatch):
         parameter: str = None,
         command_type: str = None,
     ):
-        assert self == client
+        assert self == client.api_client
         assert device_id == "00-202001010000-12345678"
         assert command == ControlCommand.VirtualInfrared.TURN_ON
         assert parameter is None

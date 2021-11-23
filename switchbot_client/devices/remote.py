@@ -8,11 +8,11 @@ from switchbot_client.types import APIRemoteDeviceObject
 from .base import SwitchBotCommandResult, SwitchBotDevice
 
 if TYPE_CHECKING:
-    from switchbot_client.api import SwitchBotAPIClient
+    from switchbot_client import SwitchBotClient
 
 
 class SwitchBotRemoteDevice(SwitchBotDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         device_id = device["deviceId"]
         remote_type = device["remoteType"]
         device_name = device["deviceName"]
@@ -28,7 +28,7 @@ class SwitchBotRemoteDevice(SwitchBotDevice):
 
     @staticmethod
     def create_by_api_object(  # noqa
-        client: SwitchBotAPIClient, device: APIRemoteDeviceObject
+        client: SwitchBotClient, device: APIRemoteDeviceObject
     ) -> SwitchBotRemoteDevice:
         # pylint: disable=too-many-branches,too-many-return-statements
         remote_type = device["remoteType"]
@@ -64,12 +64,12 @@ class SwitchBotRemoteDevice(SwitchBotDevice):
         raise TypeError(f"invalid physical device object: {device}")
 
     @staticmethod
-    def get_device_by_id(client: SwitchBotAPIClient, device_id: str) -> APIRemoteDeviceObject:
+    def get_device_by_id(client: SwitchBotClient, device_id: str) -> APIRemoteDeviceObject:
         if client is None:
             raise TypeError
         if device_id is None:
             raise TypeError
-        response = client.devices()
+        response = client.api_client.devices()
         remote_devices = response.body["infraredRemoteList"]
         for device in remote_devices:
             if device["deviceId"] == device_id:
@@ -98,7 +98,7 @@ class AirConditioner(SwitchBotRemoteDevice):
         POWER_ON = "on"
         POWER_OFF = "off"
 
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.AIR_CONDITIONER)
 
@@ -109,7 +109,7 @@ class AirConditioner(SwitchBotRemoteDevice):
         self.fan_speed_memory = AirConditioner.Parameters.FAN_SPEED_AUTO
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> AirConditioner:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> AirConditioner:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return AirConditioner(client, device)
 
@@ -174,12 +174,12 @@ class AirConditioner(SwitchBotRemoteDevice):
 
 
 class TV(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.TV)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> TV:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> TV:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return TV(client, device)
 
@@ -203,7 +203,7 @@ class TV(SwitchBotRemoteDevice):
 
 
 class Light(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.LIGHT)
 
@@ -214,18 +214,18 @@ class Light(SwitchBotRemoteDevice):
         return self.command(ControlCommand.VirtualInfrared.BRIGHTNESS_DOWN)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Light:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Light:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Light(client, device)
 
 
 class IPTVStreamer(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.IPTV_STREAMER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> IPTVStreamer:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> IPTVStreamer:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return IPTVStreamer(client, device)
 
@@ -243,12 +243,12 @@ class IPTVStreamer(SwitchBotRemoteDevice):
 
 
 class SetTopBox(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.SET_TOP_BOX)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> SetTopBox:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> SetTopBox:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return SetTopBox(client, device)
 
@@ -266,12 +266,12 @@ class SetTopBox(SwitchBotRemoteDevice):
 
 
 class DVD(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.DVD)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> DVD:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> DVD:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return DVD(client, device)
 
@@ -301,12 +301,12 @@ class DVD(SwitchBotRemoteDevice):
 
 
 class Fan(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.FAN)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Fan:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Fan:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Fan(client, device)
 
@@ -327,45 +327,45 @@ class Fan(SwitchBotRemoteDevice):
 
 
 class Projector(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.PROJECTOR)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Projector:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Projector:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Projector(client, device)
 
 
 class Camera(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.CAMERA)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Camera:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Camera:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Camera(client, device)
 
 
 class AirPurifier(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.AIR_PURIFIER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> AirPurifier:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> AirPurifier:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return AirPurifier(client, device)
 
 
 class Speaker(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.SPEAKER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Speaker:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Speaker:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Speaker(client, device)
 
@@ -395,33 +395,33 @@ class Speaker(SwitchBotRemoteDevice):
 
 
 class WaterHeater(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.WATER_HEATER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> WaterHeater:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> WaterHeater:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return WaterHeater(client, device)
 
 
 class VacuumCleaner(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.VACUUM_CLEANER)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> VacuumCleaner:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> VacuumCleaner:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return VacuumCleaner(client, device)
 
 
 class Others(SwitchBotRemoteDevice):
-    def __init__(self, client: SwitchBotAPIClient, device: APIRemoteDeviceObject):
+    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
         super().__init__(client, device)
         self._check_remote_type(RemoteType.OTHERS)
 
     @staticmethod
-    def create_by_id(client: SwitchBotAPIClient, device_id: str) -> Others:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> Others:
         device = SwitchBotRemoteDevice.get_device_by_id(client, device_id)
         return Others(client, device)
