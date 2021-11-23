@@ -74,7 +74,7 @@ class SwitchBotRemoteDevice(SwitchBotDevice):
         for device in remote_devices:
             if device["deviceId"] == device_id:
                 return device
-        raise RuntimeError
+        raise RuntimeError(f"device not found: {device_id}")
 
     def _check_remote_type(self, expected_device_type: str):
         if self.device_type != expected_device_type:

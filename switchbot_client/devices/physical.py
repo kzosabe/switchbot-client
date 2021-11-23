@@ -80,7 +80,7 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
         for device in physical_devices:
             if device["deviceId"] == device_id:
                 return device
-        raise RuntimeError
+        raise RuntimeError(f"device not found: {device_id}")
 
     def status(self) -> DeviceStatus:
         status = self.client.api_client.devices_status(self.device_id).body
