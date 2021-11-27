@@ -1,3 +1,10 @@
+0.3.0, 2021-11-27
+-------------------------
+
+- API Interface Change
+  - Use SwitchBotClient instead of SwitchBotAPIClient in all public method arguments
+- Add control and status methods for each device classes
+
 0.2.0, 2021-10-30
 -------------------------
 

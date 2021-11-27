@@ -15,6 +15,7 @@ https://github.com/kzosabe/switchbot-client
    :maxdepth: 2
    :caption: Contents:
 
+   modules
 
 Indices and tables
 ==================
