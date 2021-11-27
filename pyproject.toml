@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "switchbot-client"
-version = "0.2.0"
+version = "0.3.0"
 description = "A Python client library for SwitchBot API."
 license = "Apache-2.0 or MIT"
 authors = [
@@ -22,8 +22,8 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.7"
 requests = "^2.0"
-PyYAML = "^5.4.1"
-typing-extensions = "^3.10.0"
+PyYAML = ">=5.4.1,<7.0.0"
+typing-extensions = ">=3.10,<5.0"
 
 [tool.poetry.dev-dependencies]
 black = ">=20.8b1"
@@ -32,16 +32,17 @@ isort = "^5.9.3"
 mypy = "^0.910"
 pylint = "^2.10.2"
 pytest = "^6.2.5"
-pytest-cov = "^2.12.1"
+pytest-cov = "^3.0.0"
 pytest-mock = "^3.6.1"
 tox = "^3.24.4"
+Sphinx = "^4.3.0"
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint."message control"]
-disable = ["C0114,C0115,C0116,R0801,R0903,R0913"]
+disable = ["C0114,C0115,C0116,R0801,R0902,R0903,R0913"]
 
 [tool.black]
 line-length = 100

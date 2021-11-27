@@ -116,10 +116,10 @@ https://github.com/OpenWonderLabs/SwitchBotAPI#get-device-status
 ### Control Device
 
 ```python
-from switchbot_client import SwitchBotAPIClient
+from switchbot_client import SwitchBotClient
 from switchbot_client.devices import Light
 
-client = SwitchBotAPIClient()
+client = SwitchBotClient()
 device_id = "12345"  # My Light(virtual infrared remote devices)
 device = Light.create_by_id(client, device_id)
 print(device.turn_on())

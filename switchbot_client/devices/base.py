@@ -4,15 +4,13 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
-from switchbot_client.devices.status import DeviceStatus
-
 if TYPE_CHECKING:
-    from switchbot_client.api import SwitchBotAPIClient
+    from switchbot_client import SwitchBotClient
 
 
 @dataclass()
 class SwitchBotDevice(ABC):
-    client: SwitchBotAPIClient
+    client: SwitchBotClient
     device_id: str
     device_type: str
     device_name: str
@@ -29,20 +27,12 @@ class SwitchBotDevice(ABC):
         if self.hub_device_id in ["FFFFFFFFFFFF", "000000000000"]:
             self.hub_device_id = None
 
-    def status(self) -> DeviceStatus:
-        status = self.client.devices_status(self.device_id).body
-        return DeviceStatus(
-            device_id=status["deviceId"] if "deviceId" in status else self.device_id,
-            device_type=status["deviceType"] if "deviceType" in status else self.device_type,
-            device_name=status["deviceName"] if "deviceName" in status else self.device_name,
-            hub_device_id=status["hubDeviceId"] if "hubDeviceId" in status else self.hub_device_id,
-            raw_data=status,
-        )
-
     def command(
         self, command: str, parameter: str = None, command_type: str = None
     ) -> SwitchBotCommandResult:
-        response = self.client.devices_commands(self.device_id, command, parameter, command_type)
+        response = self.client.api_client.devices_commands(
+            self.device_id, command, parameter, command_type
+        )
         return SwitchBotCommandResult(response.status_code, response.message, response.body)
 
     def __repr__(self):
