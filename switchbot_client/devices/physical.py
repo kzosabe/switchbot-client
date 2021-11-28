@@ -2,6 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from switchbot_client.devices.status import (
+    BotDeviceStatus,
+    ColorBulbDeviceStatus,
+    ContactSensorDeviceStatus,
+    CurtainDeviceStatus,
+    DeviceStatus,
+    HumidifierDeviceStatus,
+    MeterDeviceStatus,
+    MotionSensorDeviceStatus,
+    PlugDeviceStatus,
+    SmartFanDeviceStatus,
+)
 from switchbot_client.enums import ControlCommand, DeviceType
 from switchbot_client.types import APIPhysicalDeviceObject
 
@@ -9,18 +21,6 @@ from .base import SwitchBotCommandResult, SwitchBotDevice
 
 if TYPE_CHECKING:
     from switchbot_client import SwitchBotClient
-    from switchbot_client.devices.status import (
-        BotDeviceStatus,
-        ColorBulbDeviceStatus,
-        ContactSensorDeviceStatus,
-        CurtainDeviceStatus,
-        DeviceStatus,
-        HumidifierDeviceStatus,
-        MeterDeviceStatus,
-        MotionSensorDeviceStatus,
-        PlugDeviceStatus,
-        SmartFanDeviceStatus,
-    )
 
 
 class SwitchBotPhysicalDevice(SwitchBotDevice):
