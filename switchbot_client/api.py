@@ -128,10 +128,10 @@ class SwitchBotAPIClient:
     def _check_api_response(original_response: requests.Response):
         response = original_response.json()
         if "message" not in response:
-            raise RuntimeError("format error")
+            raise RuntimeError("format error", original_response.text)
         if response["message"] == "Unauthorized":
             raise RuntimeError(
                 "Http 401 Error. User permission is denied due to invalid token.",
-                original_response.text,
+                response,
             )
         return SwitchBotAPIResponse(response["statusCode"], response["message"], response["body"])

@@ -5,5 +5,7 @@ __pycache__/
 /dist/
 /docs/_build
 /.tox
+/.coverage
+/htmlcov
 .idea
 !.keep
