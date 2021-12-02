@@ -2,7 +2,7 @@ import pytest
 
 from switchbot_client import ControlCommand, SwitchBotClient
 from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
-from switchbot_client.devices import Bot, Light
+from switchbot_client.devices import AirConditioner, Bot, Light
 from switchbot_client.types import APIPhysicalDeviceObject
 
 
@@ -97,6 +97,30 @@ def test_virtual_infrared_illegal_device_type(monkeypatch):
     with pytest.raises(RuntimeError):
         client = SwitchBotClient("token")
         Light.create_by_id(client, "00-202001010000-12345678")
+
+
+def test_blank_hub_device_id(monkeypatch):
+    def mock_devices(*args, **kwargs):
+        return SwitchBotAPIResponse(
+            status_code=100,
+            message="success",
+            body={
+                "infraredRemoteList": [
+                    {
+                        "deviceId": "00-202001010000-12345678",
+                        "deviceName": "My Air Conditioner",
+                        "remoteType": "Air Conditioner",
+                        "hubDeviceId": "FFFFFFFFFFFF",
+                    },
+                ]
+            },
+        )
+
+    monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
+
+    client = SwitchBotClient("token")
+    sut = AirConditioner.create_by_id(client, "00-202001010000-12345678")
+    assert sut.hub_device_id is None
 
 
 def test_light(monkeypatch):
