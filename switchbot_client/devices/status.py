@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass()
@@ -6,8 +7,20 @@ class DeviceStatus:
     device_id: str
     device_type: str
     device_name: str
-    hub_device_id: str
+    hub_device_id: Optional[str]
     raw_data: dict
+
+    def __post_init__(self):
+        if self.device_type is None:
+            raise TypeError
+        if self.device_id is None:
+            raise TypeError
+        if self.device_name is None:
+            raise TypeError
+
+        # SwitchBot API returns FFFFFFFFFFFF or 000000000000 if there is no hub device ID
+        if self.hub_device_id in ["FFFFFFFFFFFF", "000000000000"]:
+            self.hub_device_id = None
 
 
 @dataclass()
@@ -74,3 +87,12 @@ class ContactSensorDeviceStatus(DeviceStatus):
     is_move_detected: bool
     brightness: str
     open_state: str
+
+
+@dataclass
+class PseudoRemoteDeviceStatus(DeviceStatus):
+    power: Optional[str]
+
+    def set_power(self, power: str):
+        self.power = power
+        self.raw_data["power"] = power
