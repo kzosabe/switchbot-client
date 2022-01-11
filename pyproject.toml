@@ -35,7 +35,7 @@ pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
 pytest-mock = "^3.6.1"
 tox = "^3.24.5"
-Sphinx = "^4.3.1"
+Sphinx = "^4.3.2"
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]
