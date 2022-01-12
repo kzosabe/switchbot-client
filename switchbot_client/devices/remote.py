@@ -6,25 +6,43 @@ from switchbot_client.enums import ControlCommand, RemoteType
 from switchbot_client.types import APIRemoteDeviceObject
 
 from .base import SwitchBotCommandResult, SwitchBotDevice
+from .status import PseudoRemoteDeviceStatus
 
 if TYPE_CHECKING:
     from switchbot_client import SwitchBotClient
 
 
 class SwitchBotRemoteDevice(SwitchBotDevice):
-    def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        device_id = device["deviceId"]
-        remote_type = device["remoteType"]
-        device_name = device["deviceName"]
-        hub_device_id = device["hubDeviceId"]
-        super().__init__(client, device_id, remote_type, device_name, hub_device_id, True)
+    def __init__(
+        self,
+        client: SwitchBotClient,
+        device: APIRemoteDeviceObject,
+        pseudo_status: PseudoRemoteDeviceStatus,
+    ):
+        super().__init__(
+            client,
+            device["deviceId"],
+            device["remoteType"],
+            device["deviceName"],
+            device["hubDeviceId"],
+            True,
+        )
         self.device = device
+        self.pseudo_status = pseudo_status
+        self._validate_pseudo_status()
 
     def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.VirtualInfrared.TURN_ON)
+        response = self.command(ControlCommand.VirtualInfrared.TURN_ON)
+        self.pseudo_status.set_power("on")
+        return response
 
     def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.VirtualInfrared.TURN_OFF)
+        response = self.command(ControlCommand.VirtualInfrared.TURN_OFF)
+        self.pseudo_status.set_power("off")
+        return response
+
+    def status(self) -> PseudoRemoteDeviceStatus:
+        return self.pseudo_status
 
     @staticmethod
     def create_by_api_object(  # noqa
@@ -83,6 +101,20 @@ class SwitchBotRemoteDevice(SwitchBotDevice):
                 f"expected: {expected_device_type}, actual: {self.device_type}"
             )
 
+    def _validate_pseudo_status(self):
+        if (
+            self.pseudo_status.device_id != self.device_id
+            or self.pseudo_status.device_type != self.device_type
+            or self.pseudo_status.device_name != self.device_name
+            or self.pseudo_status.hub_device_id != self.hub_device_id
+        ):
+            raise RuntimeError(
+                f"Illegal pseudo status. "
+                f"expected: {self.device_id}, {self.device_type}, "
+                f"{self.device_name}, {self.hub_device_id}, "
+                f"actual: {self.pseudo_status}"
+            )
+
 
 class AirConditioner(SwitchBotRemoteDevice):
     class Parameters:
@@ -99,7 +131,15 @@ class AirConditioner(SwitchBotRemoteDevice):
         POWER_OFF = "off"
 
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.AIR_CONDITIONER)
 
         # remote devices don't have status fetch commands
@@ -175,7 +215,15 @@ class AirConditioner(SwitchBotRemoteDevice):
 
 class TV(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.TV)
 
     @staticmethod
@@ -204,7 +252,15 @@ class TV(SwitchBotRemoteDevice):
 
 class Light(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.LIGHT)
 
     def brightness_up(self) -> SwitchBotCommandResult:
@@ -221,7 +277,15 @@ class Light(SwitchBotRemoteDevice):
 
 class IPTVStreamer(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.IPTV_STREAMER)
 
     @staticmethod
@@ -244,7 +308,15 @@ class IPTVStreamer(SwitchBotRemoteDevice):
 
 class SetTopBox(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.SET_TOP_BOX)
 
     @staticmethod
@@ -267,7 +339,15 @@ class SetTopBox(SwitchBotRemoteDevice):
 
 class DVD(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.DVD)
 
     @staticmethod
@@ -302,7 +382,15 @@ class DVD(SwitchBotRemoteDevice):
 
 class Fan(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.FAN)
 
     @staticmethod
@@ -328,7 +416,15 @@ class Fan(SwitchBotRemoteDevice):
 
 class Projector(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.PROJECTOR)
 
     @staticmethod
@@ -339,7 +435,15 @@ class Projector(SwitchBotRemoteDevice):
 
 class Camera(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.CAMERA)
 
     @staticmethod
@@ -350,7 +454,15 @@ class Camera(SwitchBotRemoteDevice):
 
 class AirPurifier(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.AIR_PURIFIER)
 
     @staticmethod
@@ -361,7 +473,15 @@ class AirPurifier(SwitchBotRemoteDevice):
 
 class Speaker(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.SPEAKER)
 
     @staticmethod
@@ -396,7 +516,15 @@ class Speaker(SwitchBotRemoteDevice):
 
 class WaterHeater(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.WATER_HEATER)
 
     @staticmethod
@@ -407,7 +535,15 @@ class WaterHeater(SwitchBotRemoteDevice):
 
 class VacuumCleaner(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.VACUUM_CLEANER)
 
     @staticmethod
@@ -418,7 +554,15 @@ class VacuumCleaner(SwitchBotRemoteDevice):
 
 class Others(SwitchBotRemoteDevice):
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        super().__init__(client, device)
+        pseudo_status = PseudoRemoteDeviceStatus(
+            device_id=device["deviceId"],
+            device_type=device["remoteType"],
+            device_name=device["deviceName"],
+            hub_device_id=device["hubDeviceId"],
+            power=None,
+            raw_data={},
+        )
+        super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.OTHERS)
 
     @staticmethod

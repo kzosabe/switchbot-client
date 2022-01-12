@@ -107,7 +107,8 @@ DeviceStatus(device_id='ABCDE', device_type='Meter', device_name='Meter 0', hub_
 ```
 
 This function allows you to get the status of a device.
-Note that only physical devices can be targeted, not virtual infrared remote devices.
+Note that only the physical device returns accurate results, while the virtual infrared remote device is inaccurate, 
+storing the results of the most recent operation.
 
 Please refer to the following official document to know what kind of information can be obtained from each device.
 
