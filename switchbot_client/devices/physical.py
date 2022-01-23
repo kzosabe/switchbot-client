@@ -12,7 +12,10 @@ from switchbot_client.devices.status import (
     MeterDeviceStatus,
     MotionSensorDeviceStatus,
     PlugDeviceStatus,
+    PlugMiniJpDeviceStatus,
+    PlugMiniUsDeviceStatus,
     SmartFanDeviceStatus,
+    StripLightDeviceStatus,
 )
 from switchbot_client.enums import ControlCommand, DeviceType
 from switchbot_client.types import APIPhysicalDeviceObject
@@ -48,6 +51,10 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             return Bot(client, device)
         if device_type == DeviceType.PLUG:
             return Plug(client, device)
+        if device_type == DeviceType.PLUG_MINI_US:
+            return PlugMiniUs(client, device)
+        if device_type == DeviceType.PLUG_MINI_JP:
+            return PlugMiniJp(client, device)
         if device_type == DeviceType.CURTAIN:
             return Curtain(client, device)
         if device_type == DeviceType.METER:
@@ -62,6 +69,8 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             return Humidifier(client, device)
         if device_type == DeviceType.SMART_FAN:
             return SmartFan(client, device)
+        if device_type == DeviceType.STRIP_LIGHT:
+            return StripLight(client, device)
         if device_type == DeviceType.INDOOR_CAM:
             return IndoorCam(client, device)
         if device_type == DeviceType.REMOTE:
@@ -196,6 +205,106 @@ class Plug(SwitchBotPhysicalDevice):
 
     def turn_off(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Plug.TURN_OFF)
+
+
+class PlugMiniUs(SwitchBotPhysicalDevice):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.PLUG_MINI_US)
+
+    @staticmethod
+    def create_by_id(client: SwitchBotClient, device_id: str) -> PlugMiniUs:
+        device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
+        return PlugMiniUs(client, device)
+
+    def status(self) -> PlugMiniUsDeviceStatus:
+        status = super().status()
+        return PlugMiniUsDeviceStatus(
+            device_id=status.device_id,
+            device_type=status.device_type,
+            device_name=status.device_name,
+            hub_device_id=status.hub_device_id,
+            raw_data=status.raw_data,
+            power=status.raw_data["power"],
+            voltage=status.raw_data["voltage"],
+            weight=status.raw_data["weight"],
+            electricity_of_day=status.raw_data["electricityOfDay"],
+            electric_current=status.raw_data["electricCurrent"],
+        )
+
+    def power(self) -> str:
+        return self.status().power
+
+    def voltage(self) -> int:
+        return self.status().voltage
+
+    def weight(self) -> int:
+        return self.status().weight
+
+    def electricity_of_day(self) -> int:
+        return self.status().electricity_of_day
+
+    def electric_current(self) -> int:
+        return self.status().electric_current
+
+    def turn_on(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.PlugMiniUs.TURN_ON)
+
+    def turn_off(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.PlugMiniUs.TURN_OFF)
+
+    def toggle(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.PlugMiniUs.TOGGLE)
+
+
+class PlugMiniJp(SwitchBotPhysicalDevice):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.PLUG_MINI_JP)
+
+    @staticmethod
+    def create_by_id(client: SwitchBotClient, device_id: str) -> PlugMiniJp:
+        device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
+        return PlugMiniJp(client, device)
+
+    def status(self) -> PlugMiniJpDeviceStatus:
+        status = super().status()
+        return PlugMiniJpDeviceStatus(
+            device_id=status.device_id,
+            device_type=status.device_type,
+            device_name=status.device_name,
+            hub_device_id=status.hub_device_id,
+            raw_data=status.raw_data,
+            power=status.raw_data["power"],
+            voltage=status.raw_data["voltage"],
+            weight=status.raw_data["weight"],
+            electricity_of_day=status.raw_data["electricityOfDay"],
+            electric_current=status.raw_data["electricCurrent"],
+        )
+
+    def power(self) -> str:
+        return self.status().power
+
+    def voltage(self) -> int:
+        return self.status().voltage
+
+    def weight(self) -> int:
+        return self.status().weight
+
+    def electricity_of_day(self) -> int:
+        return self.status().electricity_of_day
+
+    def electric_current(self) -> int:
+        return self.status().electric_current
+
+    def turn_on(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.PlugMiniJp.TURN_ON)
+
+    def turn_off(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.PlugMiniJp.TURN_OFF)
+
+    def toggle(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.PlugMiniJp.TOGGLE)
 
 
 class Curtain(SwitchBotPhysicalDevice):
@@ -388,10 +497,10 @@ class ColorBulb(SwitchBotPhysicalDevice):
         return self.status().color_temperature
 
     def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Humidifier.TURN_ON)
+        return self.command(ControlCommand.ColorBulb.TURN_ON)
 
     def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Humidifier.TURN_OFF)
+        return self.command(ControlCommand.ColorBulb.TURN_OFF)
 
     def set_brightness(self, brightness: int) -> SwitchBotCommandResult:
         """
@@ -596,6 +705,71 @@ class SmartFan(SwitchBotPhysicalDevice):
             ControlCommand.SmartFan.SET_ALL_STATUS,
             parameter=f"on,{fan_mode},{fan_speed},{shake_range}",
         )
+
+
+class StripLight(SwitchBotPhysicalDevice):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.STRIP_LIGHT)
+
+    @staticmethod
+    def create_by_id(client: SwitchBotClient, device_id: str) -> StripLight:
+        device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
+        return StripLight(client, device)
+
+    def status(self) -> StripLightDeviceStatus:
+        status = super().status()
+        colors = [int(i) for i in status.raw_data["color"].split(":")]
+        color_hex = f"#{colors[0]:02x}{colors[1]:02x}{colors[2]:02x}"
+        return StripLightDeviceStatus(
+            device_id=status.device_id,
+            device_type=status.device_type,
+            device_name=status.device_name,
+            hub_device_id=status.hub_device_id,
+            raw_data=status.raw_data,
+            power=status.raw_data["power"],
+            color_hex=color_hex,
+            brightness=status.raw_data["brightness"],
+        )
+
+    def power(self) -> str:
+        return self.status().power
+
+    def brightness(self) -> int:
+        return self.status().brightness
+
+    def color_hex(self) -> str:
+        """
+        returns #rrggbb format color string
+        """
+        return self.status().color_hex
+
+    def turn_on(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.StripLight.TURN_ON)
+
+    def turn_off(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.StripLight.TURN_OFF)
+
+    def toggle(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.StripLight.TOGGLE)
+
+    def set_brightness(self, brightness: int) -> SwitchBotCommandResult:
+        """
+        brightness: 1 ~ 100
+        """
+        return self.command(ControlCommand.StripLight.SET_BRIGHTNESS, parameter=f"{brightness}")
+
+    def set_color_by_number(self, red: int, green: int, blue: int) -> SwitchBotCommandResult:
+        """
+        red: 0 ~ 255
+        green: 0 ~ 255
+        blue: 0 ~ 255
+        """
+        return self.command(ControlCommand.StripLight.SET_COLOR, parameter=f"{red}:{green}:{blue}")
+
+    def set_color(self, color_hex: str) -> SwitchBotCommandResult:
+        rgb = tuple(int(color_hex.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4))
+        return self.set_color_by_number(rgb[0], rgb[1], rgb[2])
 
 
 class IndoorCam(SwitchBotPhysicalDevice):
