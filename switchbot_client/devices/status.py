@@ -34,6 +34,24 @@ class PlugDeviceStatus(DeviceStatus):
 
 
 @dataclass()
+class PlugMiniUsDeviceStatus(DeviceStatus):
+    power: str
+    voltage: int
+    weight: int
+    electricity_of_day: int
+    electric_current: int
+
+
+@dataclass()
+class PlugMiniJpDeviceStatus(DeviceStatus):
+    power: str
+    voltage: int
+    weight: int
+    electricity_of_day: int
+    electric_current: int
+
+
+@dataclass()
 class CurtainDeviceStatus(DeviceStatus):
     is_calibrated: bool
     is_grouped: bool
@@ -68,6 +86,13 @@ class SmartFanDeviceStatus(DeviceStatus):
     is_shaking: bool
     shake_center: int
     shake_range: int
+
+
+@dataclass()
+class StripLightDeviceStatus(DeviceStatus):
+    power: str
+    color_hex: str
+    brightness: int
 
 
 @dataclass()
