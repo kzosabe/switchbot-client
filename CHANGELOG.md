@@ -1,3 +1,13 @@
+0.3.2, 2022-02-03
+-------------------------
+
+- Add new devices
+  - Plug Mini, Strip Light, Meter Plus, Lock
+- Add pseudo status for remote devices
+  - Now you can call status() on remote devices
+  - It returns the value specified in the last change operation, 
+    which may or may not match the true state of the device
+
 0.3.1, 2021-11-27
 -------------------------
 
