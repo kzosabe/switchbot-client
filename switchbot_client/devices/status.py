@@ -102,6 +102,18 @@ class MeterDeviceStatus(DeviceStatus):
 
 
 @dataclass()
+class MeterPlusUsDeviceStatus(DeviceStatus):
+    humidity: int
+    temperature: float
+
+
+@dataclass()
+class MeterPlusJpDeviceStatus(DeviceStatus):
+    humidity: int
+    temperature: float
+
+
+@dataclass()
 class MotionSensorDeviceStatus(DeviceStatus):
     is_move_detected: bool
     brightness: str
@@ -112,6 +124,13 @@ class ContactSensorDeviceStatus(DeviceStatus):
     is_move_detected: bool
     brightness: str
     open_state: str
+
+
+@dataclass()
+class LockDeviceStatus(DeviceStatus):
+    is_calibrated: bool
+    lock_state: str
+    door_state: str
 
 
 @dataclass

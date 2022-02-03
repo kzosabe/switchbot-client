@@ -8,6 +8,8 @@ class DeviceType:
     PLUG_MINI_US = "Plug Mini (US)"
     PLUG_MINI_JP = "Plug Mini (JP)"
     METER = "Meter"
+    METER_PLUS_US = "Meter Plus (US)"
+    METER_PLUS_JP = "Meter Plus (JP)"
     MOTION_SENSOR = "Motion Sensor"
     CONTACT_SENSOR = "Contact Sensor"
     COLOR_BULB = "Color Bulb"
@@ -16,6 +18,7 @@ class DeviceType:
     STRIP_LIGHT = "Strip Light"
     INDOOR_CAM = "Indoor Cam"
     REMOTE = "Remote"  # undocumented in official api reference?
+    LOCK = "Lock"
 
 
 class RemoteType:
