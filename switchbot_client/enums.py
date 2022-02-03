@@ -5,14 +5,20 @@ class DeviceType:
     BOT = "Bot"
     CURTAIN = "Curtain"
     PLUG = "Plug"
+    PLUG_MINI_US = "Plug Mini (US)"
+    PLUG_MINI_JP = "Plug Mini (JP)"
     METER = "Meter"
+    METER_PLUS_US = "Meter Plus (US)"
+    METER_PLUS_JP = "Meter Plus (JP)"
     MOTION_SENSOR = "Motion Sensor"
     CONTACT_SENSOR = "Contact Sensor"
     COLOR_BULB = "Color Bulb"
     HUMIDIFIER = "Humidifier"
     SMART_FAN = "Smart Fan"
+    STRIP_LIGHT = "Strip Light"
     INDOOR_CAM = "Indoor Cam"
     REMOTE = "Remote"  # undocumented in official api reference?
+    LOCK = "Lock"
 
 
 class RemoteType:
@@ -42,6 +48,16 @@ class ControlCommand:
         TURN_ON = "turnOn"
         TURN_OFF = "turnOff"
 
+    class PlugMiniUs:
+        TURN_ON = "turnOn"
+        TURN_OFF = "turnOff"
+        TOGGLE = "toggle"
+
+    class PlugMiniJp:
+        TURN_ON = "turnOn"
+        TURN_OFF = "turnOff"
+        TOGGLE = "toggle"
+
     class Curtain:
         TURN_ON = "turnOn"
         TURN_OFF = "turnOff"
@@ -64,6 +80,13 @@ class ControlCommand:
         TURN_ON = "turnOn"
         TURN_OFF = "turnOff"
         SET_ALL_STATUS = "setAllStatus"
+
+    class StripLight:
+        TURN_ON = "turnOn"
+        TURN_OFF = "turnOff"
+        TOGGLE = "toggle"
+        SET_BRIGHTNESS = "setBrightness"
+        SET_COLOR = "setColor"
 
     class VirtualInfrared:
         TURN_ON = "turnOn"

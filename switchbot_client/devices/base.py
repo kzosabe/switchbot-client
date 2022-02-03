@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from switchbot_client import SwitchBotClient
+    from switchbot_client.devices import DeviceStatus
 
 
 @dataclass()
-class SwitchBotDevice(ABC):
+class SwitchBotDeviceBase:
     client: SwitchBotClient
     device_id: str
     device_type: str
@@ -27,6 +28,8 @@ class SwitchBotDevice(ABC):
         if self.hub_device_id in ["FFFFFFFFFFFF", "000000000000"]:
             self.hub_device_id = None
 
+
+class SwitchBotDevice(ABC, SwitchBotDeviceBase):
     def command(
         self, command: str, parameter: str = None, command_type: str = None
     ) -> SwitchBotCommandResult:
@@ -34,6 +37,10 @@ class SwitchBotDevice(ABC):
             self.device_id, command, parameter, command_type
         )
         return SwitchBotCommandResult(response.status_code, response.message, response.body)
+
+    @abstractmethod
+    def status(self) -> DeviceStatus:
+        pass
 
     def __repr__(self):
         data = {
