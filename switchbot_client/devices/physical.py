@@ -621,7 +621,7 @@ class Humidifier(SwitchBotPhysicalDevice):
             is_auto=status.raw_data["auto"],
             is_child_lock=status.raw_data["childLock"],
             is_muted=not status.raw_data["sound"],
-            is_lack_water=status.raw_data["lackWater"],
+            is_lack_water=status.raw_data["lackWater"] if "lackWater" in status.raw_data else False,
         )
 
     def power(self) -> str:
