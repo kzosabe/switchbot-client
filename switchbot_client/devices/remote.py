@@ -1,23 +1,25 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar
 
 from switchbot_client.enums import ControlCommand, RemoteType
 from switchbot_client.types import APIRemoteDeviceObject
 
 from .base import SwitchBotCommandResult, SwitchBotDevice
-from .status import PseudoRemoteDeviceStatus
+from .status import PseudoAirConditionerStatus, PseudoRemoteDeviceStatus
 
 if TYPE_CHECKING:
     from switchbot_client import SwitchBotClient
 
+AnyRemoteDeviceStatus = TypeVar("AnyRemoteDeviceStatus", bound=PseudoRemoteDeviceStatus)
 
-class SwitchBotRemoteDevice(SwitchBotDevice):
+
+class SwitchBotRemoteDevice(SwitchBotDevice, Generic[AnyRemoteDeviceStatus]):
     def __init__(
         self,
         client: SwitchBotClient,
         device: APIRemoteDeviceObject,
-        pseudo_status: PseudoRemoteDeviceStatus,
+        pseudo_status: AnyRemoteDeviceStatus,
     ):
         super().__init__(
             client,
@@ -41,7 +43,7 @@ class SwitchBotRemoteDevice(SwitchBotDevice):
         self.pseudo_status.set_power("off")
         return response
 
-    def status(self) -> PseudoRemoteDeviceStatus:
+    def status(self) -> AnyRemoteDeviceStatus:
         return self.pseudo_status
 
     @staticmethod
@@ -116,7 +118,7 @@ class SwitchBotRemoteDevice(SwitchBotDevice):
             )
 
 
-class AirConditioner(SwitchBotRemoteDevice):
+class AirConditioner(SwitchBotRemoteDevice[PseudoAirConditionerStatus]):
     class Parameters:
         MODE_AUTO = 1
         MODE_COOL = 2
@@ -131,22 +133,19 @@ class AirConditioner(SwitchBotRemoteDevice):
         POWER_OFF = "off"
 
     def __init__(self, client: SwitchBotClient, device: APIRemoteDeviceObject):
-        pseudo_status = PseudoRemoteDeviceStatus(
+        pseudo_status = PseudoAirConditionerStatus(
             device_id=device["deviceId"],
             device_type=device["remoteType"],
             device_name=device["deviceName"],
             hub_device_id=device["hubDeviceId"],
             power=None,
             raw_data={},
+            temperature=25.0,
+            mode=AirConditioner.Parameters.MODE_AUTO,
+            fan_speed=AirConditioner.Parameters.FAN_SPEED_AUTO,
         )
         super().__init__(client, device, pseudo_status)
         self._check_remote_type(RemoteType.AIR_CONDITIONER)
-
-        # remote devices don't have status fetch commands
-        # we can only memorize recently applied parameter and use it
-        self.temperature_memory = 25.0
-        self.mode_memory = AirConditioner.Parameters.MODE_AUTO
-        self.fan_speed_memory = AirConditioner.Parameters.FAN_SPEED_AUTO
 
     @staticmethod
     def create_by_id(client: SwitchBotClient, device_id: str) -> AirConditioner:
@@ -154,7 +153,11 @@ class AirConditioner(SwitchBotRemoteDevice):
         return AirConditioner(client, device)
 
     def set_all(
-        self, temperature: float, mode: int, fan_speed: int, power: str
+        self,
+        temperature: Optional[float],
+        mode: Optional[int],
+        fan_speed: Optional[int],
+        power: Optional[str],
     ) -> SwitchBotCommandResult:
         """
         temperature: temperature in celsius
@@ -162,9 +165,14 @@ class AirConditioner(SwitchBotRemoteDevice):
         fan_speed(Parameters.FAN_SPEED_XXX): 1(auto), 2(low), 3(medium), 4(high)
         power(Parameters.POWER_XXX): on, off
         """
-        self.temperature_memory = temperature
-        self.mode_memory = mode
-        self.fan_speed_memory = fan_speed
+        if temperature is not None:
+            self.pseudo_status.set_temperature(temperature)
+        if mode is not None:
+            self.pseudo_status.set_mode(mode)
+        if fan_speed is not None:
+            self.pseudo_status.set_fan_speed(fan_speed)
+        if power is not None:
+            self.pseudo_status.set_power(power)
         return self.command(
             ControlCommand.VirtualInfrared.SET_ALL,
             parameter=f"{temperature},{mode},{fan_speed},{power}",
@@ -182,7 +190,9 @@ class AirConditioner(SwitchBotRemoteDevice):
         It is recommended to turn on AirConditioner with the set_all
         with all values specified before use this function.
         """
-        return self.set_all(temperature, self.mode_memory, self.fan_speed_memory, "on")
+        return self.set_all(
+            temperature, self.pseudo_status.mode, self.pseudo_status.fan_speed, "on"
+        )
 
     def set_mode(self, mode: int) -> SwitchBotCommandResult:
         """
@@ -196,7 +206,9 @@ class AirConditioner(SwitchBotRemoteDevice):
         It is recommended to turn on AirConditioner with the set_all
         with all values specified before use this function.
         """
-        return self.set_all(self.temperature_memory, mode, self.fan_speed_memory, "on")
+        return self.set_all(
+            self.pseudo_status.temperature, mode, self.pseudo_status.fan_speed, "on"
+        )
 
     def set_fan_speed(self, fan_speed: int) -> SwitchBotCommandResult:
         """
@@ -210,7 +222,9 @@ class AirConditioner(SwitchBotRemoteDevice):
         It is recommended to turn on AirConditioner with the set_all
         with all values specified before use this function.
         """
-        return self.set_all(self.temperature_memory, self.mode_memory, fan_speed, "on")
+        return self.set_all(
+            self.pseudo_status.temperature, self.pseudo_status.mode, fan_speed, "on"
+        )
 
 
 class TV(SwitchBotRemoteDevice):
