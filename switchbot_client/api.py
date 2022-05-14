@@ -1,6 +1,7 @@
 import json
 import os
 from dataclasses import dataclass
+from typing import List
 
 import requests
 import yaml
@@ -97,6 +98,62 @@ class SwitchBotAPIClient:
     def scenes_execute(self, scene_id: str) -> SwitchBotAPIResponse:
         response: requests.Response = requests.post(
             self._uri(f"v1.0/scenes/{scene_id}/execute"), headers=self._headers()
+        )
+        formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
+        return formatted_response
+
+    def webhook_setup(self, url: str) -> SwitchBotAPIResponse:
+        payload = {
+            "action": "setupWebhook",
+            "url": url,
+            "deviceList": "ALL",
+        }
+        response: requests.Response = requests.post(
+            self._uri("v1.0/webhook/setupWebhook"),
+            headers=self._headers(),
+            data=json.dumps(payload),
+        )
+        formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
+        return formatted_response
+
+    def webhook_query_url(self) -> SwitchBotAPIResponse:
+        payload = {
+            "action": "queryUrl",
+        }
+        response: requests.Response = requests.post(
+            self._uri("v1.0/webhook/queryWebhook"),
+            headers=self._headers(),
+            data=json.dumps(payload),
+        )
+        formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
+        return formatted_response
+
+    def webhook_query_details(self, urls: List[str]) -> SwitchBotAPIResponse:
+        payload = {"action": "queryDetails", "urls": urls}
+        response: requests.Response = requests.post(
+            self._uri("v1.0/webhook/queryWebhook"),
+            headers=self._headers(),
+            data=json.dumps(payload),
+        )
+        formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
+        return formatted_response
+
+    def webhook_update(self, config: dict) -> SwitchBotAPIResponse:
+        payload = {"action": "updateWebhook", "config": config}
+        response: requests.Response = requests.post(
+            self._uri("v1.0/webhook/updateWebhook"),
+            headers=self._headers(),
+            data=json.dumps(payload),
+        )
+        formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
+        return formatted_response
+
+    def webhook_delete(self, url: str) -> SwitchBotAPIResponse:
+        payload = {"action": "deleteWebhook", "url": url}
+        response: requests.Response = requests.post(
+            self._uri("v1.0/webhook/deleteWebhook"),
+            headers=self._headers(),
+            data=json.dumps(payload),
         )
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
