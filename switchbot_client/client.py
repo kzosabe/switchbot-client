@@ -1,9 +1,11 @@
+from datetime import datetime
 from typing import List, Optional
 
-from switchbot_client.api import SwitchBotAPIClient
+from switchbot_client.api import SwitchBotAPIClient, SwitchBotAPIResponse
 from switchbot_client.devices.base import SwitchBotDevice
 from switchbot_client.devices.factory import SwitchBotDeviceFactory
 from switchbot_client.scenes import SwitchBotScene
+from switchbot_client.webhooks.base import SwitchBotWebhook
 
 
 class SwitchBotClient:
@@ -42,3 +44,30 @@ class SwitchBotClient:
         if len(filtered) == 0:
             return None
         return filtered[0]
+
+    def webhooks(self) -> List[SwitchBotWebhook]:
+        response_urls = self.api_client.webhook_query_url().body["urls"]
+        response = self.api_client.webhook_query_details(response_urls).body
+        return [
+            SwitchBotWebhook(
+                r["url"],
+                r["enable"],
+                r["deviceList"],
+                datetime.fromtimestamp(r["createTime"] / 1000),
+                datetime.fromtimestamp(r["lastUpdateTime"] / 1000),
+            )
+            for r in response
+        ]
+
+    def create_webhook(self, url: str) -> SwitchBotAPIResponse:
+        return self.api_client.webhook_setup(url)
+
+    def set_webhook(self, url: str, enable: bool) -> SwitchBotAPIResponse:
+        config = {
+            "url": url,
+            "enable": enable,
+        }
+        return self.api_client.webhook_update(config)
+
+    def delete_webhook(self, url: str) -> SwitchBotAPIResponse:
+        return self.api_client.webhook_delete(url)
