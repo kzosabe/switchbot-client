@@ -1,3 +1,11 @@
+0.4.0, 2022-05-24
+-------------------------
+
+- Add webhook support(#77, #78)
+  - You can create, get, set, and delete webhook configurations via SwitchBotClient or SwitchBotAPIClient
+- Add pseudo status for AirConditioner(#59)
+- Fix Humidifier behavior when lackWater column is missing(#58)
+
 0.3.2, 2022-02-03
 -------------------------
 
