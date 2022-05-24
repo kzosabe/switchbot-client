@@ -164,6 +164,22 @@ SwitchBotCommandResult(status_code=100, message='success', response_body={})
 ```
 The specified scene can be executed immediately.
 
+### Webhooks
+
+```python
+from switchbot_client import SwitchBotClient
+
+client = SwitchBotClient()
+client.set_webhook(url="https://example.com/foo", enable=True)
+print(client.webhooks())
+```
+
+```
+[SwitchBotWebhook(url='https://example.com/foo', enable=True, device_list='ALL', create_time=datetime.datetime(2022, 1, 1, 12, 0, 0, 123456), last_update_time=datetime.datetime(2022, 1, 1, 12, 0, 0, 123456))]
+```
+
+You can handle [webhook](https://github.com/OpenWonderLabs/SwitchBotAPI#webhook) configurations via SwitchBotClient.
+
 ### Raw API interface
 
 Devices and scenes also can be manipulated via the low-level raw API client.

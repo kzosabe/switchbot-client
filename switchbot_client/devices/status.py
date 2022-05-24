@@ -140,3 +140,23 @@ class PseudoRemoteDeviceStatus(DeviceStatus):
     def set_power(self, power: str):
         self.power = power
         self.raw_data["power"] = power
+
+
+@dataclass
+class PseudoAirConditionerStatus(PseudoRemoteDeviceStatus):
+    power: Optional[str]
+    temperature: Optional[float]
+    mode: Optional[int]
+    fan_speed: Optional[int]
+
+    def set_temperature(self, temperature: float):
+        self.temperature = temperature
+        self.raw_data["temperature"] = temperature
+
+    def set_mode(self, mode: int):
+        self.mode = mode
+        self.raw_data["mode"] = mode
+
+    def set_fan_speed(self, fan_speed: int):
+        self.fan_speed = fan_speed
+        self.raw_data["fanSpeed"] = fan_speed
