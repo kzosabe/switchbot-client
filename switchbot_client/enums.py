@@ -39,58 +39,40 @@ class RemoteType:
 
 
 class ControlCommand:
-    class Bot:
+    class Common:
         TURN_ON = "turnOn"
         TURN_OFF = "turnOff"
+
+    class Bot:
         PRESS = "press"
 
-    class Plug:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
-
     class PlugMiniUs:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         TOGGLE = "toggle"
 
     class PlugMiniJp:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         TOGGLE = "toggle"
 
     class Curtain:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         SET_POSITION = "setPosition"
 
     class Humidifier:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         SET_MODE = "setMode"
 
     class ColorBulb:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         TOGGLE = "toggle"
         SET_BRIGHTNESS = "setBrightness"
         SET_COLOR = "setColor"
         SET_COLOR_TEMPERATURE = "setColorTemperature"
 
     class SmartFan:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         SET_ALL_STATUS = "setAllStatus"
 
     class StripLight:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         TOGGLE = "toggle"
         SET_BRIGHTNESS = "setBrightness"
         SET_COLOR = "setColor"
 
     class VirtualInfrared:
-        TURN_ON = "turnOn"
-        TURN_OFF = "turnOff"
         SET_ALL = "setAll"
         SET_CHANNEL = "SetChannel"
         VOLUME_ADD = "volumeAdd"

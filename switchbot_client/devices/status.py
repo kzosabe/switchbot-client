@@ -81,6 +81,7 @@ class ColorBulbDeviceStatus(DeviceStatus):
 
 @dataclass()
 class SmartFanDeviceStatus(DeviceStatus):
+    power: str
     mode: int
     speed: int
     is_shaking: bool

@@ -34,12 +34,12 @@ class SwitchBotRemoteDevice(SwitchBotDevice, Generic[AnyRemoteDeviceStatus]):
         self._validate_pseudo_status()
 
     def turn_on(self) -> SwitchBotCommandResult:
-        response = self.command(ControlCommand.VirtualInfrared.TURN_ON)
+        response = self.command(ControlCommand.Common.TURN_ON)
         self.pseudo_status.set_power("on")
         return response
 
     def turn_off(self) -> SwitchBotCommandResult:
-        response = self.command(ControlCommand.VirtualInfrared.TURN_OFF)
+        response = self.command(ControlCommand.Common.TURN_OFF)
         self.pseudo_status.set_power("off")
         return response
 
