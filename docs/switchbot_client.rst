@@ -9,6 +9,7 @@ Subpackages
 
    switchbot_client.devices
    switchbot_client.scenes
+   switchbot_client.webhooks
 
 Submodules
 ----------
