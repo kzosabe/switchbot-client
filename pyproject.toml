@@ -27,7 +27,7 @@ typing-extensions = ">=3.10,<5.0"
 
 [tool.poetry.dev-dependencies]
 black = ">=20.8b1"
-flake8 = "^4.0.1"
+flake8 = "^5.0.2"
 isort = "^5.9.3"
 mypy = "^0.961"
 pylint = "^2.13.9"
