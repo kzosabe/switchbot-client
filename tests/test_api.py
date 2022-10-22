@@ -20,13 +20,15 @@ def test_init_no_token(patch_load_config):
 def test_init_by_env(patch_load_config, monkeypatch):
     patch_load_config.return_value = None
     monkeypatch.setenv("SWITCHBOT_OPEN_TOKEN", "abcdefg")
+    monkeypatch.setenv("SWITCHBOT_SECRET_KEY", "1234567")
     sut = SwitchBotAPIClient()
     assert sut.token == "abcdefg"
+    assert sut.secret_key == "1234567"
 
 
 @patch("os.path.exists")
 def test_init_by_config_file(patch_path_exists, mocker):
-    m = mocker.patch("builtins.open", mocker.mock_open(read_data="token: foo"))
+    m = mocker.patch("builtins.open", mocker.mock_open(read_data="token: foo\nsecret_key: bar"))
     patch_path_exists.return_value = True
     sut = SwitchBotAPIClient()
     m.assert_called_with(sut.config_file_path(), encoding="utf-8")
@@ -36,18 +38,29 @@ def test_init_by_config_file(patch_path_exists, mocker):
 def test_init_by_another_config_file(patch_path_exists, mocker):
     m = mocker.patch(
         "builtins.open",
-        mocker.mock_open(read_data="token: foo\napi_host_domain: https://new-api.example.com"),
+        mocker.mock_open(
+            read_data="token: foo\nsecret_key: bar\napi_host_domain: https://new-api.example.com"
+        ),
     )
     patch_path_exists.return_value = True
     sut = SwitchBotAPIClient(config_file_path="~/.config/switch-bot-client/another-config.yml")
     m.assert_called_with("~/.config/switch-bot-client/another-config.yml", encoding="utf-8")
     assert sut.token == "foo"
+    assert sut.secret_key == "bar"
     assert sut.api_host_domain == "https://new-api.example.com"
 
 
 @patch("os.path.exists")
 def test_init_by_config_file_no_token(patch_path_exists, mocker):
     m = mocker.patch("builtins.open", mocker.mock_open(read_data="not_token: foo"))
+    patch_path_exists.return_value = True
+    with pytest.raises(RuntimeError):
+        SwitchBotAPIClient()
+
+
+@patch("os.path.exists")
+def test_init_by_config_file_no_secret_key(patch_path_exists, mocker):
+    m = mocker.patch("builtins.open", mocker.mock_open(read_data="token: foo\nnot_secret_key: bar"))
     patch_path_exists.return_value = True
     with pytest.raises(RuntimeError):
         SwitchBotAPIClient()
@@ -63,15 +76,19 @@ def test_init_by_config_file_no_file(patch_path_exists):
 @patch.object(SwitchBotAPIClient, "_load_config")
 def test_init_by_args(patch_load_config):
     patch_load_config.return_value = None
-    sut = SwitchBotAPIClient("123456")
+    sut = SwitchBotAPIClient("123456", "abcdef")
     assert sut.token == "123456"
+    assert sut.secret_key == "abcdef"
 
 
 @patch.object(SwitchBotAPIClient, "_load_config")
 def test_init_with_domain(patch_load_config):
     patch_load_config.return_value = None
-    sut = SwitchBotAPIClient(token="foobar", api_host_domain="https://new-api.example.com")
+    sut = SwitchBotAPIClient(
+        token="foobar", secret_key="baz", api_host_domain="https://new-api.example.com"
+    )
     assert sut.token == "foobar"
+    assert sut.secret_key == "baz"
     assert sut.api_host_domain == "https://new-api.example.com"
 
 
@@ -126,7 +143,7 @@ def test_devices(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
     sut = client.devices()
     assert sut.status_code == expected.get("statusCode")
     assert sut.message == expected.get("message")
@@ -156,7 +173,7 @@ def test_devices_status(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
     sut = client.devices_status("device_foo")
     assert sut.status_code == expected.get("statusCode")
     assert sut.message == expected.get("message")
@@ -180,7 +197,7 @@ def test_devices_status_wrong_device_error(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
 
     with pytest.raises(RuntimeError) as e:
         sut = client.devices_status("device_foo")
@@ -207,7 +224,7 @@ def test_devices_status_broken_response(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
 
     with pytest.raises(RuntimeError) as e:
         sut = client.devices_status("device_foo")
@@ -229,7 +246,7 @@ def test_devices_status_unauthorized(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
 
     with pytest.raises(RuntimeError) as e:
         sut = client.devices_status("device_foo")
@@ -253,7 +270,7 @@ def test_devices_commands(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "post", mock_post)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
     sut = client.devices_commands(
         "device_foo",
         ControlCommand.ColorBulb.SET_BRIGHTNESS,
@@ -285,7 +302,7 @@ def test_scenes(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
     sut = client.scenes()
     assert sut.status_code == expected.get("statusCode")
     assert sut.message == expected.get("message")
@@ -309,7 +326,7 @@ def test_scenes_execute(monkeypatch):
         return MockResponse()
 
     monkeypatch.setattr(requests, "post", mock_post)
-    client = SwitchBotAPIClient("token")
+    client = SwitchBotAPIClient("token", "key")
     sut = client.scenes_execute(
         "scene_foo",
     )

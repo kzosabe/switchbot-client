@@ -61,7 +61,7 @@ def test_devices(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "key")
     sut = client.devices()
     assert sorted([type(e) for e in sut], key=lambda e: e.__name__) == [
         AirConditioner,
@@ -120,7 +120,7 @@ def test_device(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "key")
     sut = client.device("12345")
     assert sut.device_name == "My Light"
     sut = client.device("some_not_exists_id")
@@ -163,7 +163,7 @@ def test_device_error_dups(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "key")
     with pytest.raises(RuntimeError):
         sut = client.device("ABCDEFG")
 
@@ -191,7 +191,7 @@ def test_scenes(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "key")
     sut = client.scenes()
     assert [e.scene_id for e in sut] == [
         "T02-20200804130110",
@@ -223,7 +223,7 @@ def test_scene(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "key")
     sut = client.scene("T02-202009221414-48924101")
     assert sut.scene_name == "Set Office AC to 25"
     sut = client.scene("some_not_exists_id")
@@ -253,6 +253,6 @@ def test_scene_error_dups(monkeypatch):
     monkeypatch.setattr(SwitchBotPhysicalDevice, "_check_device_type", dummy_method)
     monkeypatch.setattr(SwitchBotRemoteDevice, "_check_remote_type", dummy_method)
     monkeypatch.setattr(requests, "get", mock_get)
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "key")
     with pytest.raises(RuntimeError):
         sut = client.scene("T02-20200804130110")

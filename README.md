@@ -8,12 +8,6 @@
 
 An unofficial Python client implementation of the SwitchBot API.
 
-## About this version
-
-switchbot-client-0.x.x is the implementation for [SwitchBot API version 1.0](https://github.com/OpenWonderLabs/SwitchBotAPI/blob/main/README-v1.0.md).
-The implementation for API version 1.1 or later will proceed with switchbot-client-1.x.x.
-Please select the library version according to the API version you use.
-Development of switchbot-client-0.x.x will likely cease with the SwitchBot API version update, and we recommend moving to 1.x.x.
 
 ## Table of Contents
 
@@ -24,20 +18,21 @@ Development of switchbot-client-0.x.x will likely cease with the SwitchBot API v
 
 ## Authentication
 
-Before you start using this client, you need to get an open token.
+Before you start using this client, you need to get an open token and a secret key.
 Please follow the instructions in the official documentation below.
 
 https://github.com/OpenWonderLabs/SwitchBotAPI#authentication
 
-Once you have the token, use one of the following methods to pass the information to the client.
+Once you have the token and secret key, use one of the following methods to pass the information to the client.
 
 ### Environment variables
 
-If the environment variable `SWITCHBOT_OPEN_TOKEN` is present, 
+If the environment variable `SWITCHBOT_OPEN_TOKEN` and `SWITCHBOT_SECRET_KEY` is present, 
 this client will automatically use this value.
 
 ```shell
 export SWITCHBOT_OPEN_TOKEN=your_switchbot_open_token
+export SWITCHBOT_SECRET_KEY=your_switchbot_secret_key
 python your_script.py
 ```
 
@@ -51,24 +46,26 @@ print(client.devices())
 
 ### Constructor Arguments
 
-It is also possible to initialize the client by passing a token directly as an argument.
+It is also possible to initialize the client by passing a token and a secret key directly as an argument.
 
 ```python
 from switchbot_client import SwitchBotClient
 
 your_token = "your_switchbot_open_token"
-client = SwitchBotClient(token=your_token)
+your_secret_key = "your_switchbot_secret_key"
+client = SwitchBotClient(token=your_token, secret_key=your_secret_key)
 print(client.devices())
 ```
 
 ### Config file
 
-If `~/.config/switchbot-client/config.yml` exists and has a `token` entry, 
+If `~/.config/switchbot-client/config.yml` exists and has a `token` and a `secret_key` entry, 
 this client will automatically use the value.
 
 ```shell
 mkdir -p ~/.config/switchbot-client
 echo "token: your_switchbot_open_token" >>  ~/.config/switchbot-client/config.yml
+echo "secret_key: your_switchbot_secret_key" >>  ~/.config/switchbot-client/config.yml
 python your_script.py
 ```
 

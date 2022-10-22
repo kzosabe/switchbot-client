@@ -20,7 +20,7 @@ def test_init_no_client():
 
 def test_init_no_device():
     with pytest.raises(TypeError):
-        client = SwitchBotClient("token")
+        client = SwitchBotClient("token", "key")
         Bot(client, None)
 
 
@@ -31,7 +31,7 @@ def test_create_no_client():
 
 def test_create_no_device_id():
     with pytest.raises(TypeError):
-        client = SwitchBotClient("token")
+        client = SwitchBotClient("token", "key")
         Bot.create_by_id(client=client, device_id=None)
 
 
@@ -56,5 +56,5 @@ def test_illegal_device_type(monkeypatch):
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_get)
 
     with pytest.raises(RuntimeError):
-        client = SwitchBotClient("token")
+        client = SwitchBotClient("token", "key")
         Bot.create_by_id(client, "device_id")
