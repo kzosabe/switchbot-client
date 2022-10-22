@@ -19,6 +19,8 @@ class DeviceType:
     INDOOR_CAM = "Indoor Cam"
     REMOTE = "Remote"  # undocumented in official api reference?
     LOCK = "Lock"
+    ROBOT_VACUUM_CLEANER_S1_PLUS = "Robot Vacuum Cleaner S1"
+    ROBOT_VACUUM_CLEANER_S1 = "Robot Vacuum Cleaner S1 Plus"
 
 
 class RemoteType:
@@ -71,6 +73,12 @@ class ControlCommand:
         TOGGLE = "toggle"
         SET_BRIGHTNESS = "setBrightness"
         SET_COLOR = "setColor"
+
+    class RobotVacuumCleaner:
+        START = "start"
+        STOP = "stop"
+        DOCK = "dock"
+        POW_LEVEL = "PowLevel"
 
     class VirtualInfrared:
         SET_ALL = "setAll"

@@ -18,6 +18,7 @@ from switchbot_client.devices.status import (
     PlugDeviceStatus,
     PlugMiniJpDeviceStatus,
     PlugMiniUsDeviceStatus,
+    RobotVacuumCleanerDeviceStatus,
     SmartFanDeviceStatus,
     StripLightDeviceStatus,
 )
@@ -85,6 +86,10 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             return Remote(client, device)
         if device_type == DeviceType.LOCK:
             return Lock(client, device)
+        if device_type == DeviceType.ROBOT_VACUUM_CLEANER_S1:
+            return RobotVacuumCleanerS1(client, device)
+        if device_type == DeviceType.ROBOT_VACUUM_CLEANER_S1_PLUS:
+            return RobotVacuumCleanerS1Plus(client, device)
 
         raise TypeError(f"invalid physical device object: {device}")
 
@@ -887,3 +892,54 @@ class Lock(SwitchBotPhysicalDevice):
 
     def door_state(self) -> str:
         return self.status().door_state
+
+
+class RobotVacuumCleanerS1(SwitchBotPhysicalDevice):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.ROBOT_VACUUM_CLEANER_S1)
+
+    @staticmethod
+    def create_by_id(client: SwitchBotClient, device_id: str) -> RobotVacuumCleanerS1:
+        device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
+        return RobotVacuumCleanerS1(client, device)
+
+    def status(self) -> RobotVacuumCleanerDeviceStatus:
+        status = super().status()
+        return RobotVacuumCleanerDeviceStatus(
+            device_id=status.device_id,
+            device_type=status.device_type,
+            device_name=status.device_name,
+            hub_device_id=status.hub_device_id,
+            raw_data=status.raw_data,
+            working_status=status.raw_data["working_status"],
+            online_status=status.raw_data["online_status"],
+            battery=status.raw_data["battery"],
+        )
+
+    def working_status(self) -> str:
+        return self.status().working_status
+
+    def online_status(self) -> str:
+        return self.status().online_status
+
+    def battery(self) -> int:
+        return self.status().battery
+
+    def start(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.START)
+
+    def stop(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.STOP)
+
+    def dock(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.DOCK)
+
+    def pow_level(self, level: int) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.POW_LEVEL, parameter=f"{level}")
+
+
+class RobotVacuumCleanerS1Plus(RobotVacuumCleanerS1):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.ROBOT_VACUUM_CLEANER_S1_PLUS)
