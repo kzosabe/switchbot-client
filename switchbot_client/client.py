@@ -15,9 +15,13 @@ class SwitchBotClient:
     """
 
     def __init__(
-        self, token: str = None, api_host_domain: str = None, config_file_path: str = None
+        self,
+        token: str = None,
+        secret_key: str = None,
+        api_host_domain: str = None,
+        config_file_path: str = None,
     ):
-        self.api_client = SwitchBotAPIClient(token, api_host_domain, config_file_path)
+        self.api_client = SwitchBotAPIClient(token, secret_key, api_host_domain, config_file_path)
 
     def devices(self) -> List[SwitchBotDevice]:
         response = self.api_client.devices().body

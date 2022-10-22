@@ -24,7 +24,7 @@ def test_no_device(monkeypatch):
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
 
     with pytest.raises(RuntimeError):
-        client = SwitchBotClient("token")
+        client = SwitchBotClient("token", "secret_key")
         Light.create_by_id(client, "00-202001010000-12345678")
 
 
@@ -71,7 +71,7 @@ def test_illegal_device_type(monkeypatch):
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
 
     with pytest.raises(RuntimeError):
-        client = SwitchBotClient("token")
+        client = SwitchBotClient("token", "secret_key")
         Light.create_by_id(client, "00-202001010000-12345678")
 
 
@@ -94,7 +94,7 @@ def test_blank_hub_device_id(monkeypatch):
 
     monkeypatch.setattr(SwitchBotAPIClient, "devices", mock_devices)
 
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "secret_key")
     sut = AirConditioner.create_by_id(client, "00-202001010000-12345678")
     assert sut.hub_device_id is None
 
@@ -114,7 +114,7 @@ def test_validate_pseudo_status(monkeypatch):
 
     with pytest.raises(RuntimeError):
         Sut(
-            SwitchBotClient("token"),
+            SwitchBotClient("token", "secret_key"),
             {
                 "deviceId": "00-202001010000-12345678",
                 "deviceName": "My Air Conditioner",
@@ -125,7 +125,7 @@ def test_validate_pseudo_status(monkeypatch):
 
 
 def test_light(monkeypatch):
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "secret_key")
 
     def mock_devices(*args, **kwargs):
         return SwitchBotAPIResponse(
@@ -174,7 +174,7 @@ def test_light(monkeypatch):
 
 
 def test_fan(monkeypatch):
-    client = SwitchBotClient("token")
+    client = SwitchBotClient("token", "secret_key")
 
     def mock_devices_commands(
         self,

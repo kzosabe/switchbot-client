@@ -1,5 +1,9 @@
+import base64
+import hashlib
+import hmac
 import json
 import os
+import time
 from dataclasses import dataclass
 from typing import List
 
@@ -26,11 +30,16 @@ class SwitchBotAPIClient:
     DEFAULT_CONFIG_FILE_PATH = "~/.config/switchbot-client/config.yml"
 
     def __init__(
-        self, token: str = None, api_host_domain: str = None, config_file_path: str = None
+        self,
+        token: str = None,
+        secret_key: str = None,
+        api_host_domain: str = None,
+        config_file_path: str = None,
     ) -> None:
         self.__config_file_path = config_file_path
         self.api_version = "v1.1"
         config = self._load_config()
+
         if token is not None:
             self.token = token
         elif "SWITCHBOT_OPEN_TOKEN" in os.environ and len(os.environ["SWITCHBOT_OPEN_TOKEN"]) > 0:
@@ -40,6 +49,15 @@ class SwitchBotAPIClient:
         else:
             raise RuntimeError("no token specified")
 
+        if secret_key is not None:
+            self.secret_key = secret_key
+        elif "SWITCHBOT_SECRET_KEY" in os.environ and len(os.environ["SWITCHBOT_SECRET_KEY"]) > 0:
+            self.secret_key = os.environ["SWITCHBOT_SECRET_KEY"]
+        elif config is not None and "secret_key" in config.keys():
+            self.secret_key = config["secret_key"]
+        else:
+            raise RuntimeError("no secret_key specified")
+
         if api_host_domain is not None:
             self.api_host_domain = api_host_domain
         elif config is not None and "api_host_domain" in config.keys():
@@ -48,9 +66,7 @@ class SwitchBotAPIClient:
             self.api_host_domain = "https://api.switch-bot.com"
 
     def devices(self) -> SwitchBotAPIResponse:
-        response: requests.Response = requests.get(
-            self._uri("devices"), headers=self._headers()
-        )
+        response: requests.Response = requests.get(self._uri("devices"), headers=self._headers())
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
 
@@ -90,9 +106,7 @@ class SwitchBotAPIClient:
         return formatted_response
 
     def scenes(self) -> SwitchBotAPIResponse:
-        response: requests.Response = requests.get(
-            self._uri("scenes"), headers=self._headers()
-        )
+        response: requests.Response = requests.get(self._uri("scenes"), headers=self._headers())
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
 
@@ -171,8 +185,23 @@ class SwitchBotAPIClient:
         version = AppConstants.VERSION
         return {
             "content-type": "application/json",
-            "authorization": self.token,
             "user-agent": f"switchbot-client/{version}",
+            **self._generate_auth_header(),
+        }
+
+    def _generate_auth_header(self):
+        nonce = ""
+        timestamp = int(round(time.time() * 1000))
+        string_to_sign = bytes(f"{self.token}{timestamp}{nonce}", "utf-8")
+        secret = bytes(self.secret_key, "utf-8")
+        sign = base64.b64encode(
+            hmac.new(secret, msg=string_to_sign, digestmod=hashlib.sha256).digest()
+        )
+        return {
+            "Authorization": self.token,
+            "t": str(timestamp),
+            "sign": str(sign, "utf-8"),
+            "nonce": nonce,
         }
 
     def _load_config(self):
