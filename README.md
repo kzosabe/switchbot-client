@@ -8,6 +8,13 @@
 
 An unofficial Python client implementation of the SwitchBot API.
 
+## About this version
+
+switchbot-client-0.x.x is the implementation for [SwitchBot API version 1.0](https://github.com/OpenWonderLabs/SwitchBotAPI/blob/main/README-v1.0.md).
+The implementation for API version 1.1 or later will proceed with switchbot-client-1.x.x.
+Please select the library version according to the API version you use.
+Development of switchbot-client-0.x.x will likely cease with the SwitchBot API version update, and we recommend moving to 1.x.x.
+
 ## Table of Contents
 
 - [Authentication](#authentication)
@@ -31,7 +38,7 @@ this client will automatically use this value.
 
 ```shell
 export SWITCHBOT_OPEN_TOKEN=your_switchbot_open_token
-python3 your_script.py
+python your_script.py
 ```
 
 ```python
@@ -62,7 +69,7 @@ this client will automatically use the value.
 ```shell
 mkdir -p ~/.config/switchbot-client
 echo "token: your_switchbot_open_token" >>  ~/.config/switchbot-client/config.yml
-python3 your_script.py
+python your_script.py
 ```
 
 ```python
