@@ -29,6 +29,7 @@ class SwitchBotAPIClient:
         self, token: str = None, api_host_domain: str = None, config_file_path: str = None
     ) -> None:
         self.__config_file_path = config_file_path
+        self.api_version = "v1.1"
         config = self._load_config()
         if token is not None:
             self.token = token
@@ -48,14 +49,14 @@ class SwitchBotAPIClient:
 
     def devices(self) -> SwitchBotAPIResponse:
         response: requests.Response = requests.get(
-            self._uri("v1.0/devices"), headers=self._headers()
+            self._uri("devices"), headers=self._headers()
         )
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
 
     def devices_status(self, device_id: str) -> SwitchBotAPIResponse:
         response: requests.Response = requests.get(
-            self._uri(f"v1.0/devices/{device_id}/status"), headers=self._headers()
+            self._uri(f"devices/{device_id}/status"), headers=self._headers()
         )
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         if formatted_response.status_code == 190:
@@ -81,7 +82,7 @@ class SwitchBotAPIClient:
         if command_type is not None:
             payload["command_type"] = command_type
         response: requests.Response = requests.post(
-            self._uri(f"v1.0/devices/{device_id}/commands"),
+            self._uri(f"devices/{device_id}/commands"),
             headers=self._headers(),
             data=json.dumps(payload),
         )
@@ -90,14 +91,14 @@ class SwitchBotAPIClient:
 
     def scenes(self) -> SwitchBotAPIResponse:
         response: requests.Response = requests.get(
-            self._uri("v1.0/scenes"), headers=self._headers()
+            self._uri("scenes"), headers=self._headers()
         )
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
 
     def scenes_execute(self, scene_id: str) -> SwitchBotAPIResponse:
         response: requests.Response = requests.post(
-            self._uri(f"v1.0/scenes/{scene_id}/execute"), headers=self._headers()
+            self._uri(f"scenes/{scene_id}/execute"), headers=self._headers()
         )
         formatted_response: SwitchBotAPIResponse = self._check_api_response(response)
         return formatted_response
@@ -109,7 +110,7 @@ class SwitchBotAPIClient:
             "deviceList": "ALL",
         }
         response: requests.Response = requests.post(
-            self._uri("v1.0/webhook/setupWebhook"),
+            self._uri("webhook/setupWebhook"),
             headers=self._headers(),
             data=json.dumps(payload),
         )
@@ -121,7 +122,7 @@ class SwitchBotAPIClient:
             "action": "queryUrl",
         }
         response: requests.Response = requests.post(
-            self._uri("v1.0/webhook/queryWebhook"),
+            self._uri("webhook/queryWebhook"),
             headers=self._headers(),
             data=json.dumps(payload),
         )
@@ -131,7 +132,7 @@ class SwitchBotAPIClient:
     def webhook_query_details(self, urls: List[str]) -> SwitchBotAPIResponse:
         payload = {"action": "queryDetails", "urls": urls}
         response: requests.Response = requests.post(
-            self._uri("v1.0/webhook/queryWebhook"),
+            self._uri("webhook/queryWebhook"),
             headers=self._headers(),
             data=json.dumps(payload),
         )
@@ -141,7 +142,7 @@ class SwitchBotAPIClient:
     def webhook_update(self, config: dict) -> SwitchBotAPIResponse:
         payload = {"action": "updateWebhook", "config": config}
         response: requests.Response = requests.post(
-            self._uri("v1.0/webhook/updateWebhook"),
+            self._uri("webhook/updateWebhook"),
             headers=self._headers(),
             data=json.dumps(payload),
         )
@@ -151,7 +152,7 @@ class SwitchBotAPIClient:
     def webhook_delete(self, url: str) -> SwitchBotAPIResponse:
         payload = {"action": "deleteWebhook", "url": url}
         response: requests.Response = requests.post(
-            self._uri("v1.0/webhook/deleteWebhook"),
+            self._uri("webhook/deleteWebhook"),
             headers=self._headers(),
             data=json.dumps(payload),
         )
@@ -164,7 +165,7 @@ class SwitchBotAPIClient:
         return self.__config_file_path
 
     def _uri(self, endpoint: str):
-        return f"{self.api_host_domain}/{endpoint}"
+        return f"{self.api_host_domain}/{self.api_version}/{endpoint}"
 
     def _headers(self):
         version = AppConstants.VERSION
