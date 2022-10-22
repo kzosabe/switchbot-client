@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath("../switchbot_client"))
 project = "switchbot-client"
 copyright = "2021, kzosabe"
 author = "kzosabe"
-release = "0.4.0"
+release = "0.4.1"
 extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon"]
 templates_path = ["_templates"]
 exclude_patterns = ["_build", ".DS_Store"]

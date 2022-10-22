@@ -152,7 +152,7 @@ def test_light(monkeypatch):
     ):
         assert self == client.api_client
         assert device_id == "00-202001010000-12345678"
-        assert command == ControlCommand.VirtualInfrared.TURN_ON
+        assert command == ControlCommand.Common.TURN_ON
         assert parameter is None
         assert command_type is None
         return SwitchBotAPIResponse(
@@ -185,7 +185,7 @@ def test_fan(monkeypatch):
     ):
         assert self == client.api_client
         assert device_id == "00-202001010000-12345678"
-        assert command == ControlCommand.VirtualInfrared.TURN_OFF
+        assert command == ControlCommand.Common.TURN_OFF
         assert parameter is None
         assert command_type is None
         return SwitchBotAPIResponse(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from switchbot_client.devices.status import (
@@ -17,6 +18,7 @@ from switchbot_client.devices.status import (
     PlugDeviceStatus,
     PlugMiniJpDeviceStatus,
     PlugMiniUsDeviceStatus,
+    RobotVacuumCleanerDeviceStatus,
     SmartFanDeviceStatus,
     StripLightDeviceStatus,
 )
@@ -84,6 +86,10 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             return Remote(client, device)
         if device_type == DeviceType.LOCK:
             return Lock(client, device)
+        if device_type == DeviceType.ROBOT_VACUUM_CLEANER_S1:
+            return RobotVacuumCleanerS1(client, device)
+        if device_type == DeviceType.ROBOT_VACUUM_CLEANER_S1_PLUS:
+            return RobotVacuumCleanerS1Plus(client, device)
 
         raise TypeError(f"invalid physical device object: {device}")
 
@@ -116,6 +122,23 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
                 f"Illegal device type. "
                 f"expected: {expected_device_type}, actual: {self.device_type}"
             )
+
+
+class SwitchBotPhysicalControllableDevice(SwitchBotPhysicalDevice):
+    def turn_on(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.Common.TURN_ON)
+
+    def turn_off(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.Common.TURN_OFF)
+
+    def toggle(self) -> SwitchBotCommandResult:
+        if self.is_turned_on():
+            return self.turn_off()
+        return self.turn_on()
+
+    @abstractmethod
+    def is_turned_on(self) -> bool:
+        pass
 
 
 class Hub(SwitchBotPhysicalDevice):
@@ -151,7 +174,7 @@ class HubPlus(SwitchBotPhysicalDevice):
         return HubPlus(client, device)
 
 
-class Bot(SwitchBotPhysicalDevice):
+class Bot(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.BOT)
@@ -175,17 +198,14 @@ class Bot(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Bot.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Bot.TURN_OFF)
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
 
     def press(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.Bot.PRESS)
 
 
-class Plug(SwitchBotPhysicalDevice):
+class Plug(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.PLUG)
@@ -209,14 +229,11 @@ class Plug(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Plug.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Plug.TURN_OFF)
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
 
 
-class PlugMiniUs(SwitchBotPhysicalDevice):
+class PlugMiniUs(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.PLUG_MINI_US)
@@ -244,6 +261,9 @@ class PlugMiniUs(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
+
     def voltage(self) -> int:
         return self.status().voltage
 
@@ -256,17 +276,11 @@ class PlugMiniUs(SwitchBotPhysicalDevice):
     def electric_current(self) -> int:
         return self.status().electric_current
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.PlugMiniUs.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.PlugMiniUs.TURN_OFF)
-
     def toggle(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.PlugMiniUs.TOGGLE)
 
 
-class PlugMiniJp(SwitchBotPhysicalDevice):
+class PlugMiniJp(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.PLUG_MINI_JP)
@@ -294,6 +308,9 @@ class PlugMiniJp(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
+
     def voltage(self) -> int:
         return self.status().voltage
 
@@ -306,17 +323,11 @@ class PlugMiniJp(SwitchBotPhysicalDevice):
     def electric_current(self) -> int:
         return self.status().electric_current
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.PlugMiniJp.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.PlugMiniJp.TURN_OFF)
-
     def toggle(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.PlugMiniJp.TOGGLE)
 
 
-class Curtain(SwitchBotPhysicalDevice):
+class Curtain(SwitchBotPhysicalControllableDevice):
     class Parameters:
         MODE_PERFORMANCE = "0"
         MODE_SILENT = "1"
@@ -357,11 +368,8 @@ class Curtain(SwitchBotPhysicalDevice):
     def is_moving(self) -> bool:
         return self.status().is_moving
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Curtain.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Curtain.TURN_OFF)
+    def is_turned_on(self) -> bool:
+        return self.status().slide_position != 0
 
     def set_position(self, index: int, mode: str, position: int) -> SwitchBotCommandResult:
         """
@@ -522,7 +530,7 @@ class ContactSensor(SwitchBotPhysicalDevice):
         return self.status().is_move_detected
 
 
-class ColorBulb(SwitchBotPhysicalDevice):
+class ColorBulb(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.COLOR_BULB)
@@ -551,6 +559,9 @@ class ColorBulb(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
+
     def brightness(self) -> int:
         return self.status().brightness
 
@@ -562,12 +573,6 @@ class ColorBulb(SwitchBotPhysicalDevice):
 
     def color_temperature(self) -> int:
         return self.status().color_temperature
-
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.ColorBulb.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.ColorBulb.TURN_OFF)
 
     def set_brightness(self, brightness: int) -> SwitchBotCommandResult:
         """
@@ -596,7 +601,7 @@ class ColorBulb(SwitchBotPhysicalDevice):
         )
 
 
-class Humidifier(SwitchBotPhysicalDevice):
+class Humidifier(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.HUMIDIFIER)
@@ -627,6 +632,9 @@ class Humidifier(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
+
     def temperature(self) -> float:
         return self.status().temperature
 
@@ -648,12 +656,6 @@ class Humidifier(SwitchBotPhysicalDevice):
     def is_lack_water(self) -> bool:
         return not self.status().is_lack_water
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Humidifier.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.Humidifier.TURN_OFF)
-
     def set_mode(self, mode: str) -> SwitchBotCommandResult:
         """
         auto or 101 or 102 or 103 or {0~100}
@@ -671,7 +673,7 @@ class Humidifier(SwitchBotPhysicalDevice):
         return self.set_mode("auto")
 
 
-class SmartFan(SwitchBotPhysicalDevice):
+class SmartFan(SwitchBotPhysicalControllableDevice):
     class Parameters:
         POWER_ON = "on"
         POWER_OFF = "off"
@@ -695,6 +697,7 @@ class SmartFan(SwitchBotPhysicalDevice):
             device_name=status.device_name,
             hub_device_id=status.hub_device_id,
             raw_data=status.raw_data,
+            power=status.raw_data["power"] if "power" in status.raw_data else "off",
             mode=status.raw_data["mode"],
             speed=status.raw_data["speed"],
             is_shaking=status.raw_data["shaking"],
@@ -717,11 +720,11 @@ class SmartFan(SwitchBotPhysicalDevice):
     def is_shaking(self) -> bool:
         return self.status().is_shaking
 
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.SmartFan.TURN_ON)
+    def power(self) -> str:
+        return self.status().power
 
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.SmartFan.TURN_OFF)
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
 
     def set_all_status(
         self, power: str, fan_mode: int, fan_speed: int, shake_range: int
@@ -774,7 +777,7 @@ class SmartFan(SwitchBotPhysicalDevice):
         )
 
 
-class StripLight(SwitchBotPhysicalDevice):
+class StripLight(SwitchBotPhysicalControllableDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
         self._check_device_type(DeviceType.STRIP_LIGHT)
@@ -802,6 +805,9 @@ class StripLight(SwitchBotPhysicalDevice):
     def power(self) -> str:
         return self.status().power
 
+    def is_turned_on(self) -> bool:
+        return self.power().lower() == "on"
+
     def brightness(self) -> int:
         return self.status().brightness
 
@@ -810,12 +816,6 @@ class StripLight(SwitchBotPhysicalDevice):
         returns #rrggbb format color string
         """
         return self.status().color_hex
-
-    def turn_on(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.StripLight.TURN_ON)
-
-    def turn_off(self) -> SwitchBotCommandResult:
-        return self.command(ControlCommand.StripLight.TURN_OFF)
 
     def toggle(self) -> SwitchBotCommandResult:
         return self.command(ControlCommand.StripLight.TOGGLE)
@@ -892,3 +892,54 @@ class Lock(SwitchBotPhysicalDevice):
 
     def door_state(self) -> str:
         return self.status().door_state
+
+
+class RobotVacuumCleanerS1(SwitchBotPhysicalDevice):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.ROBOT_VACUUM_CLEANER_S1)
+
+    @staticmethod
+    def create_by_id(client: SwitchBotClient, device_id: str) -> RobotVacuumCleanerS1:
+        device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
+        return RobotVacuumCleanerS1(client, device)
+
+    def status(self) -> RobotVacuumCleanerDeviceStatus:
+        status = super().status()
+        return RobotVacuumCleanerDeviceStatus(
+            device_id=status.device_id,
+            device_type=status.device_type,
+            device_name=status.device_name,
+            hub_device_id=status.hub_device_id,
+            raw_data=status.raw_data,
+            working_status=status.raw_data["working_status"],
+            online_status=status.raw_data["online_status"],
+            battery=status.raw_data["battery"],
+        )
+
+    def working_status(self) -> str:
+        return self.status().working_status
+
+    def online_status(self) -> str:
+        return self.status().online_status
+
+    def battery(self) -> int:
+        return self.status().battery
+
+    def start(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.START)
+
+    def stop(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.STOP)
+
+    def dock(self) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.DOCK)
+
+    def pow_level(self, level: int) -> SwitchBotCommandResult:
+        return self.command(ControlCommand.RobotVacuumCleaner.POW_LEVEL, parameter=f"{level}")
+
+
+class RobotVacuumCleanerS1Plus(RobotVacuumCleanerS1):
+    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
+        super().__init__(client, device)
+        self._check_device_type(DeviceType.ROBOT_VACUUM_CLEANER_S1_PLUS)

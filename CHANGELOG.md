@@ -1,3 +1,13 @@
+0.4.1, 2022-10-22
+-------------------------
+
+- Add new devices
+  - Robot Vacuum Cleaner S1, Robot Vacuum Cleaner S1 Plus
+- Add information about upgrading to API v1.1
+  - The switchbot API has been updated from v1.0 to v1.1
+  - v1.0-compliant implementations will be finalized in this version,
+    and v1.1-compliant development will proceed in switchbot-client-1.x.x
+
 0.4.0, 2022-05-24
 -------------------------
 

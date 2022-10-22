@@ -81,6 +81,7 @@ class ColorBulbDeviceStatus(DeviceStatus):
 
 @dataclass()
 class SmartFanDeviceStatus(DeviceStatus):
+    power: str
     mode: int
     speed: int
     is_shaking: bool
@@ -131,6 +132,13 @@ class LockDeviceStatus(DeviceStatus):
     is_calibrated: bool
     lock_state: str
     door_state: str
+
+
+@dataclass()
+class RobotVacuumCleanerDeviceStatus(DeviceStatus):
+    working_status: str
+    online_status: str
+    battery: int
 
 
 @dataclass
