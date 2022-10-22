@@ -134,6 +134,13 @@ class LockDeviceStatus(DeviceStatus):
     door_state: str
 
 
+@dataclass()
+class RobotVacuumCleanerDeviceStatus(DeviceStatus):
+    working_status: str
+    online_status: str
+    battery: int
+
+
 @dataclass
 class PseudoRemoteDeviceStatus(DeviceStatus):
     power: Optional[str]
