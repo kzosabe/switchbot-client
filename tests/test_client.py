@@ -8,7 +8,7 @@ from switchbot_client.devices import (
     Light,
     Meter,
     SwitchBotPhysicalDevice,
-    SwitchBotRemoteDevice,
+    SwitchBotRemoteDevice, MeterPlus,
 )
 
 
@@ -25,6 +25,13 @@ def test_devices(monkeypatch):
                             "deviceId": "ABCDEFG",
                             "deviceName": "Meter 0A",
                             "deviceType": "Meter",
+                            "enableCloudService": True,
+                            "hubDeviceId": "ABCDE",
+                        },
+                        {
+                            "deviceId": "ABCDEFGH",
+                            "deviceName": "Meter Plus 0A",
+                            "deviceType": "MeterPlus",
                             "enableCloudService": True,
                             "hubDeviceId": "ABCDE",
                         },
@@ -68,6 +75,7 @@ def test_devices(monkeypatch):
         HubMini,
         Light,
         Meter,
+        MeterPlus,
     ]
 
 
