@@ -12,8 +12,7 @@ from switchbot_client.devices.status import (
     HumidifierDeviceStatus,
     LockDeviceStatus,
     MeterDeviceStatus,
-    MeterPlusJpDeviceStatus,
-    MeterPlusUsDeviceStatus,
+    MeterPlusDeviceStatus,
     MotionSensorDeviceStatus,
     PlugDeviceStatus,
     PlugMiniJpDeviceStatus,
@@ -64,10 +63,8 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             return Curtain(client, device)
         if device_type == DeviceType.METER:
             return Meter(client, device)
-        if device_type == DeviceType.METER_PLUS_US:
-            return MeterPlusUs(client, device)
-        if device_type == DeviceType.METER_PLUS_JP:
-            return MeterPlusJp(client, device)
+        if device_type == DeviceType.METER_PLUS:
+            return MeterPlus(client, device)
         if device_type == DeviceType.MOTION_SENSOR:
             return MotionSensor(client, device)
         if device_type == DeviceType.CONTACT_SENSOR:
@@ -410,48 +407,19 @@ class Meter(SwitchBotPhysicalDevice):
         return self.status().humidity
 
 
-class MeterPlusUs(SwitchBotPhysicalDevice):
+class MeterPlus(SwitchBotPhysicalDevice):
     def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
         super().__init__(client, device)
-        self._check_device_type(DeviceType.METER_PLUS_US)
+        self._check_device_type(DeviceType.METER_PLUS)
 
     @staticmethod
-    def create_by_id(client: SwitchBotClient, device_id: str) -> MeterPlusUs:
+    def create_by_id(client: SwitchBotClient, device_id: str) -> MeterPlus:
         device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
-        return MeterPlusUs(client, device)
+        return MeterPlus(client, device)
 
-    def status(self) -> MeterPlusUsDeviceStatus:
+    def status(self) -> MeterPlusDeviceStatus:
         status = super().status()
-        return MeterPlusUsDeviceStatus(
-            device_id=status.device_id,
-            device_type=status.device_type,
-            device_name=status.device_name,
-            hub_device_id=status.hub_device_id,
-            raw_data=status.raw_data,
-            humidity=status.raw_data["humidity"],
-            temperature=float(status.raw_data["temperature"]),
-        )
-
-    def temperature(self) -> float:
-        return self.status().temperature
-
-    def humidity(self) -> int:
-        return self.status().humidity
-
-
-class MeterPlusJp(SwitchBotPhysicalDevice):
-    def __init__(self, client: SwitchBotClient, device: APIPhysicalDeviceObject):
-        super().__init__(client, device)
-        self._check_device_type(DeviceType.METER_PLUS_JP)
-
-    @staticmethod
-    def create_by_id(client: SwitchBotClient, device_id: str) -> MeterPlusJp:
-        device = SwitchBotPhysicalDevice.get_device_by_id(client, device_id)
-        return MeterPlusJp(client, device)
-
-    def status(self) -> MeterPlusJpDeviceStatus:
-        status = super().status()
-        return MeterPlusJpDeviceStatus(
+        return MeterPlusDeviceStatus(
             device_id=status.device_id,
             device_type=status.device_type,
             device_name=status.device_name,
