@@ -27,7 +27,12 @@ class SwitchBotClient:
         response = self.api_client.devices().body
         devices = response["deviceList"]
         devices.extend(response["infraredRemoteList"])
-        return [SwitchBotDeviceFactory.create(self, d) for d in devices]
+        items = []
+        for device in devices:
+            model = SwitchBotDeviceFactory.create(self, device)
+            if model:
+                items.append(model)
+        return items
 
     def device(self, device_id: str) -> Optional[SwitchBotDevice]:
         filtered = [d for d in self.devices() if d.device_id == device_id]

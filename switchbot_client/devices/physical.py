@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import logging
 from abc import abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from switchbot_client.devices.status import (
     BotDeviceStatus,
@@ -42,7 +43,7 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
     @staticmethod
     def create_by_api_object(  # noqa
         client: SwitchBotClient, device: APIPhysicalDeviceObject
-    ) -> SwitchBotPhysicalDevice:
+    ) -> Optional[SwitchBotPhysicalDevice]:
         # pylint: disable=too-many-branches,too-many-return-statements
         device_type = device["deviceType"]
         if device_type == DeviceType.HUB:
@@ -77,18 +78,29 @@ class SwitchBotPhysicalDevice(SwitchBotDevice):
             return SmartFan(client, device)
         if device_type == DeviceType.STRIP_LIGHT:
             return StripLight(client, device)
+        if device_type == DeviceType.CEILING_LIGHT:
+            pass
+        if device_type == DeviceType.CEILING_LIGHT_PRO:
+            pass
         if device_type == DeviceType.INDOOR_CAM:
             return IndoorCam(client, device)
+        if device_type == DeviceType.PAN_TILT_CAM:
+            pass
         if device_type == DeviceType.REMOTE:
             return Remote(client, device)
         if device_type == DeviceType.LOCK:
             return Lock(client, device)
+        if device_type == DeviceType.KEYPAD:
+            pass
+        if device_type == DeviceType.KEYPAD_TOUCH:
+            pass
         if device_type == DeviceType.ROBOT_VACUUM_CLEANER_S1:
             return RobotVacuumCleanerS1(client, device)
         if device_type == DeviceType.ROBOT_VACUUM_CLEANER_S1_PLUS:
             return RobotVacuumCleanerS1Plus(client, device)
 
-        raise TypeError(f"invalid physical device object: {device}")
+        logging.warning("invalid physical device object %s", device)
+        return None
 
     @staticmethod
     def get_device_by_id(client: SwitchBotClient, device_id: str) -> APIPhysicalDeviceObject:

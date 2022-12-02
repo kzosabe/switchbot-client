@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Generic, Optional, TypeVar
 
 from switchbot_client.enums import ControlCommand, RemoteType
@@ -49,7 +50,7 @@ class SwitchBotRemoteDevice(SwitchBotDevice, Generic[AnyRemoteDeviceStatus]):
     @staticmethod
     def create_by_api_object(  # noqa
         client: SwitchBotClient, device: APIRemoteDeviceObject
-    ) -> SwitchBotRemoteDevice:
+    ) -> Optional[SwitchBotRemoteDevice]:
         # pylint: disable=too-many-branches,too-many-return-statements
         remote_type = device["remoteType"]
         if remote_type == RemoteType.AIR_CONDITIONER:
@@ -81,7 +82,8 @@ class SwitchBotRemoteDevice(SwitchBotDevice, Generic[AnyRemoteDeviceStatus]):
         if remote_type == RemoteType.OTHERS:
             return Others(client, device)
 
-        raise TypeError(f"invalid physical device object: {device}")
+        logging.warning("invalid remote device object: %s", device)
+        return None
 
     @staticmethod
     def get_device_by_id(client: SwitchBotClient, device_id: str) -> APIRemoteDeviceObject:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+import logging
+from typing import TYPE_CHECKING, Optional, Union
 
 from .physical import SwitchBotPhysicalDevice
 from .remote import SwitchBotRemoteDevice
@@ -16,9 +17,10 @@ class SwitchBotDeviceFactory:
     def create(
         client: SwitchBotClient,
         api_object: Union[APIPhysicalDeviceObject, APIRemoteDeviceObject],
-    ) -> SwitchBotDevice:
+    ) -> Optional[SwitchBotDevice]:
         if "deviceType" in api_object:
             return SwitchBotPhysicalDevice.create_by_api_object(client, api_object)  # type: ignore
         if "remoteType" in api_object:
             return SwitchBotRemoteDevice.create_by_api_object(client, api_object)  # type: ignore
-        raise TypeError(f"invalid device object: {api_object}")
+        logging.warning("invalid device object: %s", api_object)
+        return None
