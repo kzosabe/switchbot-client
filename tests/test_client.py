@@ -7,8 +7,9 @@ from switchbot_client.devices import (
     HubMini,
     Light,
     Meter,
+    MeterPlus,
     SwitchBotPhysicalDevice,
-    SwitchBotRemoteDevice, MeterPlus,
+    SwitchBotRemoteDevice,
 )
 
 
