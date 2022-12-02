@@ -103,13 +103,7 @@ class MeterDeviceStatus(DeviceStatus):
 
 
 @dataclass()
-class MeterPlusUsDeviceStatus(DeviceStatus):
-    humidity: int
-    temperature: float
-
-
-@dataclass()
-class MeterPlusJpDeviceStatus(DeviceStatus):
+class MeterPlusDeviceStatus(DeviceStatus):
     humidity: int
     temperature: float
 
