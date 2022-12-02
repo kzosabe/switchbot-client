@@ -15,9 +15,14 @@ class DeviceType:
     HUMIDIFIER = "Humidifier"
     SMART_FAN = "Smart Fan"
     STRIP_LIGHT = "Strip Light"
+    CEILING_LIGHT = "Ceiling Light"
+    CEILING_LIGHT_PRO = "Ceiling Light Pro"
     INDOOR_CAM = "Indoor Cam"
-    REMOTE = "Remote"  # undocumented in official api reference?
-    LOCK = "Lock"
+    PAN_TILT_CAM = "Pan/Tilt Cam"
+    REMOTE = "Remote"
+    LOCK = "Smart Lock"
+    KEYPAD = "Keypad"
+    KEYPAD_TOUCH = "Keypad Touch"
     ROBOT_VACUUM_CLEANER_S1_PLUS = "Robot Vacuum Cleaner S1"
     ROBOT_VACUUM_CLEANER_S1 = "Robot Vacuum Cleaner S1 Plus"
 
